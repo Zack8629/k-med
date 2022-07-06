@@ -1,25 +1,8 @@
-import os
-
 import openpyxl
 import pandas as pd
 
-from a_scripts.services import print_data_for_line, _get_template_csv
-
-cwd = f'{os.getcwd()}/..'
-
-dirname_source_file = f'{cwd}/test_files/файлы/списки от СК/'
-source_files = os.listdir(dirname_source_file)
-list_source_files = list(map(lambda name: os.path.join(dirname_source_file, name), source_files))
-ing_file_test = list_source_files[-2]
-
-result_file_test = f'{cwd}/test_files/Пример (загруженный).xlsx'
-
-source_file_test = '../test_files/файлы/списки от СК/список ингосстрах.XLS'
-
-source_file = '../working_files/файлы/списки от СК/список ингосстрах.XLS'
-result_file = f'{cwd}/working_files/Файл для заполнения.xlsx'
-
-path_to_csv_file = f'{cwd}/csv_files/'
+ing_file = 'файлы/списки от СК/список ингосстрах.XLS'
+result_file = 'Файл для заполнения.xlsx'
 
 
 def determine_gender(_val):
@@ -91,11 +74,13 @@ def write_data_to_file(file_to_write: str, data, sheet_to_write=0):
     writable_sheet = writable_file.worksheets[sheet_to_write]
 
     last_line_the_file = writable_sheet.max_row
-    line_to_write = last_line_the_file + 2
+    line_to_write = last_line_the_file + 1
 
     first_column = writable_sheet.min_column
 
     last_serial_number = last_line_the_file - 1
+    if last_serial_number == 0:
+        last_serial_number = 1
 
     for idx_line, line in enumerate(data):
         writable_sheet.cell(row=line_to_write + idx_line,
@@ -107,13 +92,18 @@ def write_data_to_file(file_to_write: str, data, sheet_to_write=0):
 
     writable_file.save(file_to_write)
 
+    sheet_name = writable_file.sheetnames[0]
+
+    data_frame = pd.read_excel(file_to_write, sheet_name=0, engine='openpyxl')
+    data_frame.to_excel(file_to_write, sheet_name=sheet_name, encoding='utf-8', index=False)
+
     name_file = file_to_write.split(sep='/')
     print(f'Write DATA to {name_file[-1]} DONE!')
 
 
 def main():
-    data = get_data(ing_file_test)
-    write_data_to_file(result_file_test, data)
+    data = get_data(ing_file)
+    write_data_to_file(result_file, data)
 
 
 if __name__ == '__main__':
