@@ -19,3 +19,7 @@ def _get_template_csv(file: str, path_csv_file: str, sheet_name=0):
 
 if __name__ == '__main__':
     pass
+
+    file = '../test_files/список росгострах.xls'
+    path_csv_file = '../csv_files/'
+    _get_template_csv(file, path_csv_file)
