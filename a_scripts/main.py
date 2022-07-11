@@ -1,8 +1,6 @@
 from openpyxl import load_workbook
 from pandas import read_excel
 
-from a_scripts.services import print_data_for_line
-
 result_file = 'готовый файл.xlsx'
 
 ingosstrakh_file = 'списки от СК/список ингосстрах.XLS'
@@ -10,7 +8,6 @@ cogaz_file = 'списки от СК/список согаз.xls'
 reso_file = 'списки от СК/список ресо.xls'
 rosgosstrakh_file = 'списки от СК/список росгострах.xls'
 alpha_file = 'списки от СК/список Альфа страхование.xlsx'
-
 renaissance_file = 'списки от СК/список ренессанс.xls'
 
 
