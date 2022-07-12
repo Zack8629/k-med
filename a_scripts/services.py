@@ -9,12 +9,15 @@ def print_data_for_line(data):
             print(val)
 
 
-def _get_template_csv(file: str, path_csv_file: str, sheet_name=0):
-    data_frame = pd.read_excel(file, sheet_name=sheet_name)
-    name_file = file.split(sep='/')
+def _get_template_csv(file_to_read, path_csv_file=None, sheet_name=0):
+    if path_csv_file is None:
+        path_csv_file = './csv_files/'
 
-    csv_file = f'{path_csv_file}/{name_file[-1]}.csv'
-    data_frame.to_csv(csv_file)
+    data_frame = pd.read_excel(file_to_read, sheet_name=sheet_name)
+    name_file = file_to_read.split(sep='/')
+
+    name_csv_file = f'{path_csv_file}/{name_file[-1]}.csv'
+    data_frame.to_csv(name_csv_file)
 
 
 if __name__ == '__main__':
