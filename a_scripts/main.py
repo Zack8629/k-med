@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from openpyxl import load_workbook
 from pandas import read_excel
 
@@ -73,13 +75,13 @@ class Parser:
                     continue
 
                 elif num_column in self.sep_column:
-                    valid_value = cell_value.title().split()
-                    for el in valid_value:
-                        data_line.append(el)
+                    values = cell_value.title().split()
+                    for val in values:
+                        data_line.append(val)
                     continue
 
-                valid_value = self.determine_gender(cell_value)
-                data_line.append(valid_value)
+                value = self.determine_gender(cell_value).title()
+                data_line.append(value)
 
             list_data.append(data_line)
 
@@ -138,8 +140,6 @@ class Parser:
 
     @staticmethod
     def determine_gender(val):
-        title_val = val.title()
-
         female_gender_list = ['WOMEN', 'ЖЕНСКИЙ', 'ЖЕН',
                               'Women', 'Женский', 'Жен', 'Ж',
                               'women', 'женский', 'жен', 'ж']
@@ -148,12 +148,12 @@ class Parser:
                             'Men', 'Мужской', 'Муж', 'М',
                             'men', 'мужской', 'муж', 'м']
 
-        if title_val in female_gender_list:
+        if val in female_gender_list:
             return female_gender_list[-1]
-        elif title_val in male_gender_list:
+        elif val in male_gender_list:
             return male_gender_list[-1]
         else:
-            return title_val
+            return val
 
     @staticmethod
     def get_list_policies(writable_sheet, policies_column=10):
@@ -171,12 +171,12 @@ class Parser:
         file_to_write = self.file_to_write
         sheet_num = self.sheet_num_to_write
 
-        writable_file.save(file_to_write)
-
         sheet_name = writable_file.sheetnames[sheet_num]
 
         data_frame = read_excel(file_to_write, sheet_name=sheet_num)
         data_frame.to_excel(file_to_write, sheet_name=sheet_name, encoding='utf-8', index=False)
+
+        writable_file.save(file_to_write)
 
         print(f'Data from "{self.file_to_read}" is written to "{file_to_write}"!')
 
