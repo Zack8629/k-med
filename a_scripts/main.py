@@ -74,6 +74,10 @@ class Parser:
 
                 elif num_column in self.sep_column:
                     values = cell_value.title().split()
+
+                    if len(values) == 2:
+                        values.append('')
+
                     for val in values:
                         data_line.append(val)
                     continue
@@ -82,13 +86,11 @@ class Parser:
                 data_line.append(value)
 
             list_data.append(data_line)
-
             next_line += 1
 
         return list_data
 
     def write_data(self, data_to_write):
-
         writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
         writable_sheet = writable_file.worksheets[self.sheet_num_to_write]
 
@@ -188,10 +190,10 @@ class Parser:
             self.write_data(data_to_write=data_to_write)
 
         except FileNotFoundError as file_not_found:
-            print(file_not_found)
+            print(f'File not found! {file_not_found}')
 
-        except Exception as err:
-            print(err)
+        except KeyError as key_error:
+            print(f'Key "{key_error}" not found!')
 
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
@@ -232,15 +234,13 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         2: 4,
         3: 6,
         4: None,
-        5: 5,
-        6: 22,
-        7: 10,
-        8: 7,
-        9: 8,
-        10: 13,
-        11: None,
-        12: None,
-        13: None,
+        5: None,
+        6: 5,
+        7: 22,
+        8: 10,
+        9: 7,
+        10: 8,
+        11: 13,
     }
 
     cogaz_parser = Parser(file_to_read=cogaz_file,
@@ -249,7 +249,7 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
                           sep_column=[1, 2],
                           start_line_to_read=20,
                           start_column_to_read=1,
-                          position_policy_in_data=7,
+                          position_policy_in_data=8,
                           dict_to_write=dict_to_write,
                           show_policies=show_policies,
                           show_data=show_data,
@@ -265,14 +265,17 @@ def reso_pars(show_policies=False, show_data=False, save=False):
         2: 4,
         3: 6,
         4: None,
-        5: 5,
-        6: 22,
-        7: 10,
-        8: 7,
-        9: None,
-        10: 8,
+        5: None,
+        6: 5,
+        7: 22,
+        8: 10,
+        9: 7,
+        10: None,
         11: None,
-        12: 13,
+        12: 8,
+        13: None,
+        14: None,
+        15: 13,
     }
 
     reso_parser = Parser(file_to_read=reso_file,
@@ -281,7 +284,7 @@ def reso_pars(show_policies=False, show_data=False, save=False):
                          sep_column=[2, 3, 8, 9],
                          start_line_to_read=7,
                          start_column_to_read=2,
-                         position_policy_in_data=7,
+                         position_policy_in_data=8,
                          dict_to_write=dict_to_write,
                          show_policies=show_policies,
                          show_data=show_data,
@@ -298,9 +301,9 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
         3: 5,
         4: 6,
         5: None,
-        6: 22,
-        7: 10,
-        8: None,
+        6: None,
+        7: 22,
+        8: 10,
     }
 
     rosgosstrakh_parser = Parser(file_to_read=rosgosstrakh_file,
@@ -309,7 +312,7 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
                                  start_line_to_read=6,
                                  start_column_to_read=2,
                                  step_line=3,
-                                 position_policy_in_data=7,
+                                 position_policy_in_data=8,
                                  dict_to_write=dict_to_write,
                                  show_policies=show_policies,
                                  show_data=show_data,
@@ -326,9 +329,10 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
         3: 4,
         4: 6,
         5: None,
-        6: 22,
-        7: 7,
-        8: 8,
+        6: None,
+        7: 22,
+        8: 7,
+        9: 8,
     }
 
     alfa_parser = Parser(file_to_read=alpha_file,
@@ -354,10 +358,9 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         2: 4,
         3: 6,
         4: None,
-        5: 22,
-        6: 10,
-        7: None,
-        8: None,
+        5: None,
+        6: 22,
+        7: 10,
     }
 
     alfa_parser = Parser(file_to_read=renaissance_file,
@@ -366,7 +369,7 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
                          sep_column=[1, 2],
                          start_line_to_read=20,
                          start_column_to_read=0,
-                         position_policy_in_data=6,
+                         position_policy_in_data=7,
                          dict_to_write=dict_to_write,
                          show_policies=show_policies,
                          show_data=show_data,
@@ -387,7 +390,7 @@ def class_pars(show_policies=False, show_data=False, save=False):
 
 
 def main():
-    num_runs = 1
+    num_runs = 3
     print(f'num_runs = {num_runs}')
     print()
 
