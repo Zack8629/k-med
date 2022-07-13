@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from openpyxl import load_workbook
 from pandas import read_excel
 
@@ -181,12 +179,19 @@ class Parser:
         print(f'Data from "{self.file_to_read}" is written to "{file_to_write}"!')
 
     def pars(self):
-        data_to_write = self.get_data_to_write()
+        try:
+            data_to_write = self.get_data_to_write()
 
-        if self.show_data:
-            self.print_data_for_line(data_to_write)
+            if self.show_data:
+                self.print_data_for_line(data_to_write)
 
-        self.write_data(data_to_write=data_to_write)
+            self.write_data(data_to_write=data_to_write)
+
+        except FileNotFoundError as file_not_found:
+            print(file_not_found)
+
+        except Exception as err:
+            print(err)
 
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
