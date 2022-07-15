@@ -179,12 +179,12 @@ class Parser:
         file_to_write = self.file_to_write
         sheet_num = self.sheet_num_to_write
 
+        writable_file.save(file_to_write)
+
         sheet_name = writable_file.sheetnames[sheet_num]
 
         data_frame = read_excel(file_to_write, sheet_name=sheet_num)
         data_frame.to_excel(file_to_write, sheet_name=sheet_name, encoding='utf-8', index=False)
-
-        writable_file.save(file_to_write)
 
         print(f'Data from "{self.file_to_read}" is written to "{file_to_write}"!')
 
