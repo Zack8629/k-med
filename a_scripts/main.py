@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from openpyxl import load_workbook
 from pandas import read_excel
 
@@ -69,10 +71,16 @@ class Parser:
             for num_column in range(start_column, last_column):
                 cell_value = str(data_frame.iloc[next_line, num_column])
 
+                try:
+                    cell_value = datetime.strptime(cell_value,
+                                                   '%Y-%m-%d %H:%M:%S').strftime('%d.%m.%Y')
+                except ValueError:
+                    pass
+
                 if cell_value == 'nan' or cell_value.isspace() or num_column in self.exclude_column:
                     continue
 
-                elif num_column in self.sep_column:
+                if num_column in self.sep_column:
                     values = cell_value.title().split()
 
                     if len(values) == 2:
@@ -233,23 +241,21 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         1: 3,
         2: 4,
         3: 6,
-        4: None,
-        5: None,
-        6: 5,
-        7: 22,
-        8: 10,
-        9: 7,
-        10: 8,
-        11: 13,
+        4: 5,
+        5: 22,
+        6: 10,
+        7: 7,
+        8: 8,
+        9: 13,
     }
 
     cogaz_parser = Parser(file_to_read=cogaz_file,
                           file_to_write=result_file,
                           exclude_column=[10, 11],
-                          sep_column=[1, 2],
+                          sep_column=[1],
                           start_line_to_read=20,
                           start_column_to_read=1,
-                          position_policy_in_data=8,
+                          position_policy_in_data=6,
                           dict_to_write=dict_to_write,
                           show_policies=show_policies,
                           show_data=show_data,
@@ -264,27 +270,21 @@ def reso_pars(show_policies=False, show_data=False, save=False):
         1: 3,
         2: 4,
         3: 6,
-        4: None,
-        5: None,
-        6: 5,
-        7: 22,
-        8: 10,
-        9: 7,
-        10: None,
-        11: None,
-        12: 8,
-        13: None,
-        14: None,
-        15: 13,
+        4: 5,
+        5: 22,
+        6: 10,
+        7: 7,
+        8: 8,
+        9: 13,
     }
 
     reso_parser = Parser(file_to_read=reso_file,
                          file_to_write=result_file,
                          exclude_column=[11, 12],
-                         sep_column=[2, 3, 8, 9],
+                         sep_column=[2],
                          start_line_to_read=7,
                          start_column_to_read=2,
-                         position_policy_in_data=8,
+                         position_policy_in_data=6,
                          dict_to_write=dict_to_write,
                          show_policies=show_policies,
                          show_data=show_data,
@@ -300,19 +300,17 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
         2: 4,
         3: 5,
         4: 6,
-        5: None,
-        6: None,
-        7: 22,
-        8: 10,
+        5: 22,
+        6: 10,
     }
 
     rosgosstrakh_parser = Parser(file_to_read=rosgosstrakh_file,
                                  file_to_write=result_file,
-                                 sep_column=[2, 4],
+                                 sep_column=[2],
                                  start_line_to_read=6,
                                  start_column_to_read=2,
                                  step_line=3,
-                                 position_policy_in_data=8,
+                                 position_policy_in_data=6,
                                  dict_to_write=dict_to_write,
                                  show_policies=show_policies,
                                  show_data=show_data,
@@ -328,17 +326,15 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
         2: 3,
         3: 4,
         4: 6,
-        5: None,
-        6: None,
-        7: 22,
-        8: 7,
-        9: 8,
+        5: 22,
+        6: 7,
+        7: 8,
     }
 
     alfa_parser = Parser(file_to_read=alpha_file,
                          file_to_write=result_file,
                          exclude_column=[5, 8],
-                         sep_column=[2, 3],
+                         sep_column=[2],
                          start_line_to_read=7,
                          start_column_to_read=1,
                          step_line=9,
@@ -357,25 +353,23 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         1: 3,
         2: 4,
         3: 6,
-        4: None,
-        5: None,
-        6: 22,
-        7: 10,
+        4: 22,
+        5: 10,
     }
 
-    alfa_parser = Parser(file_to_read=renaissance_file,
-                         file_to_write=result_file,
-                         exclude_column=[0, 3],
-                         sep_column=[1, 2],
-                         start_line_to_read=20,
-                         start_column_to_read=0,
-                         position_policy_in_data=7,
-                         dict_to_write=dict_to_write,
-                         show_policies=show_policies,
-                         show_data=show_data,
-                         save=save)
+    renaissance_parser = Parser(file_to_read=renaissance_file,
+                                file_to_write=result_file,
+                                exclude_column=[0, 3],
+                                sep_column=[1],
+                                start_line_to_read=20,
+                                start_column_to_read=0,
+                                position_policy_in_data=5,
+                                dict_to_write=dict_to_write,
+                                show_policies=show_policies,
+                                show_data=show_data,
+                                save=save)
 
-    alfa_parser.pars()
+    renaissance_parser.pars()
 
 
 def class_pars(show_policies=False, show_data=False, save=False):
@@ -390,7 +384,7 @@ def class_pars(show_policies=False, show_data=False, save=False):
 
 
 def main():
-    num_runs = 3
+    num_runs = 1
     print(f'num_runs = {num_runs}')
     print()
 
