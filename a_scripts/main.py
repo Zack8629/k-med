@@ -17,7 +17,8 @@ class Parser:
     def __init__(self, file_to_read, file_to_write, sheet_num_to_read=0, sheet_num_to_write=0,
                  exclude_column=None, sep_column=None, start_line_to_read=0,
                  start_column_to_read=0, step_line=0, dict_to_write=None,
-                 position_policy_in_data=0, show_policies=False, show_data=False, save=True):
+                 position_policy_in_data=0, show_policies=False, show_data=False, save=True,
+                 extra_lines=None, extra_column=None):
 
         if sep_column is None:
             sep_column = []
@@ -43,6 +44,12 @@ class Parser:
         self.sheet_num_to_write = sheet_num_to_write
         self.show_policies = show_policies
         self.save = save
+
+        if extra_lines is None:
+            extra_lines = []
+
+        self.extra_lines = extra_lines
+        self.extra_column = extra_column
 
     def get_data_to_write(self):
         data_frame = read_excel(self.file_to_read, sheet_name=self.sheet_num_to_read)
@@ -92,6 +99,12 @@ class Parser:
 
                 value = self.determine_gender(cell_value).title()
                 data_line.append(value)
+
+            for line in self.extra_lines:
+                cell_value = str(data_frame.iloc[line, self.extra_column])
+                values = cell_value.title().split()
+                for val in values:
+                    data_line.append(val)
 
             list_data.append(data_line)
             next_line += 1
@@ -355,6 +368,12 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         3: 6,
         4: 22,
         5: 10,
+        6: None,
+        7: 7,
+        8: None,
+        9: None,
+        10: 8,
+        11: None,
     }
 
     renaissance_parser = Parser(file_to_read=renaissance_file,
@@ -367,6 +386,8 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
                                 dict_to_write=dict_to_write,
                                 show_policies=show_policies,
                                 show_data=show_data,
+                                extra_lines=[16],
+                                extra_column=2,
                                 save=save)
 
     renaissance_parser.pars()
@@ -383,13 +404,12 @@ def class_pars(show_policies=False, show_data=False, save=False):
     print()
 
 
-def main():
-    num_runs = 1
+def main(num_runs=1, show_policies=False, show_data=False, save=True):
     print(f'num_runs = {num_runs}')
     print()
 
     for i in range(num_runs):
-        class_pars(show_policies=False, show_data=False, save=True)
+        class_pars(show_policies=show_policies, show_data=show_data, save=save)
 
 
 if __name__ == '__main__':
