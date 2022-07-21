@@ -4,14 +4,17 @@ from datetime import datetime
 from openpyxl import load_workbook
 from pandas import read_excel
 
+result_file_old = 'готовый файл_old.xlsx'
 ready_file = 'готовый файл.xlsm'
 
-ingosstrakh_file = 'списки от СК/список ингосстрах.XLS'
-cogaz_file = 'списки от СК/список согаз.xls'
-reso_file = 'списки от СК/список ресо.xls'
-rosgosstrakh_file = 'списки от СК/список росгострах.xls'
-alpha_file = 'списки от СК/список Альфа страхование.xlsx'
-renaissance_file = 'списки от СК/список ренессанс.xls'
+prefix = ' old'
+
+ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
+cogaz_file = f'списки от СК{prefix}/список согаз.xls'
+reso_file = f'списки от СК{prefix}/список ресо.xls'
+rosgosstrakh_file = f'списки от СК{prefix}/список росгострах.xls'
+alpha_file = f'списки от СК{prefix}/список Альфа страхование.xlsx'
+renaissance_file = f'списки от СК{prefix}/список ренессанс.xls'
 
 
 def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
@@ -32,9 +35,8 @@ def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
 class Parser:
     def __init__(self, file_to_read, file_to_write, sheet_num_to_read=0, sheet_num_to_write=0,
                  exclude_column=None, sep_column=None, start_line_to_read=0,
-                 start_column_to_read=0, step_line=0, dict_to_write=None,
-                 position_policy_in_data=0, show_policies=False, show_data=False, save=True,
-                 extra_lines=None, extra_column=None, extra_cell=None):
+                 start_column_to_read=0, step_line=0, dict_to_write=None, extra_cell=None,
+                 position_policy_in_data=0, show_policies=False, show_data=False, save=True):
 
         if sep_column is None:
             sep_column = []
@@ -60,12 +62,6 @@ class Parser:
         self.sheet_num_to_write = sheet_num_to_write
         self.show_policies = show_policies
         self.save = save
-
-        if extra_lines is None:
-            extra_lines = []
-
-        self.extra_lines = extra_lines
-        self.extra_column = extra_column
 
         if extra_cell is None:
             extra_cell = {}
@@ -121,19 +117,17 @@ class Parser:
                 value = self.determine_gender(cell_value).title()
                 data_line.append(value)
 
-            for line in self.extra_lines:
-                cell_value = str(data_frame.iloc[line, self.extra_column])
-
-                values = cell_value.title().split()
-                for val in values:
-                    data_line.append(val)
-
-                data_line.append(cell_value)
-
             for key in self.extra_cell:
-                print(f'key extra_cell = {key}')
-                cell_value = str(data_frame[key])
-                print(f'cell_value in extra_cell = {cell_value}')
+                line, col = key.split()
+
+                cell_value = str(data_frame.iloc[int(line), int(col)])
+                if self.extra_cell[key]:
+                    values = cell_value.title().split()
+
+                    for val in values:
+                        data_line.append(val)
+                else:
+                    data_line.append(cell_value)
 
             list_data.append(data_line)
             next_line += 1
@@ -260,6 +254,11 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
         9: 8,
         10: 14,
         11: 15,
+        12: 26,
+    }
+
+    extra_cell = {
+        '8 1': False,
     }
 
     ingosstrakh_parser = Parser(file_to_read=ingosstrakh_file,
@@ -271,6 +270,7 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
                                 dict_to_write=dict_to_write,
                                 show_policies=show_policies,
                                 show_data=show_data,
+                                extra_cell=extra_cell,
                                 save=save)
 
     ingosstrakh_parser.pars()
@@ -288,11 +288,12 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         7: 7,
         8: 8,
         9: 13,
+        10: 26,
     }
 
     cogaz_parser = Parser(file_to_read=cogaz_file,
                           file_to_write=ready_file,
-                          exclude_column=[10, 11],
+                          exclude_column=[11],
                           sep_column=[1],
                           start_line_to_read=20,
                           start_column_to_read=1,
@@ -317,11 +318,12 @@ def reso_pars(show_policies=False, show_data=False, save=False):
         7: 7,
         8: 8,
         9: 13,
+        10: 26,
     }
 
     reso_parser = Parser(file_to_read=reso_file,
                          file_to_write=ready_file,
-                         exclude_column=[11, 12],
+                         exclude_column=[12],
                          sep_column=[2],
                          start_line_to_read=7,
                          start_column_to_read=2,
@@ -368,13 +370,14 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
         3: 4,
         4: 6,
         5: 24,
-        6: 7,
-        7: 8,
+        6: 26,
+        7: 7,
+        8: 8,
+        9: 13,
     }
 
     alfa_parser = Parser(file_to_read=alpha_file,
                          file_to_write=ready_file,
-                         exclude_column=[5, 8],
                          sep_column=[2],
                          start_line_to_read=7,
                          start_column_to_read=1,
@@ -402,11 +405,14 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         9: None,
         10: 8,
         11: None,
+        12: 13,
+        13: 26,
     }
 
     extra_cell = {
-        'C18': True,
-        'C20': False,
+        '16 2': True,
+        '18 2': False,
+        '14 2': False,
     }
 
     renaissance_parser = Parser(file_to_read=renaissance_file,
@@ -419,9 +425,7 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
                                 dict_to_write=dict_to_write,
                                 show_policies=show_policies,
                                 show_data=show_data,
-                                # extra_lines=[16, 18],
-                                # extra_column=2,
-                                # extra_cell=extra_cell,
+                                extra_cell=extra_cell,
                                 save=save)
 
     renaissance_parser.pars()
