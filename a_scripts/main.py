@@ -7,7 +7,7 @@ from pandas import read_excel
 result_file_old = 'готовый файл_old.xlsx'
 ready_file = 'готовый файл.xlsm'
 
-prefix = ' new'
+prefix = ''
 
 ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
 cogaz_file = f'списки от СК{prefix}/список согаз.xls'
@@ -107,38 +107,48 @@ class Parser:
                     continue
 
                 if num_column in self.sep_column:
-                    values = cell_value.title().split()
+                    values = cell_value.split()
 
                     if len(values) == 2:
                         values.append('')
 
-                    for val in values:
-                        data_line.append(val)
+                    self.append_value_to_data_line(data_line, values)
                     continue
 
-                value = self.determine_gender(cell_value).title()
-                data_line.append(value)
+                value = self.determine_gender(cell_value)
+                self.append_value_to_data_line(data_line, value)
 
             for key in self.extra_cell:
                 line, col = key.split()
 
                 cell_value = str(data_frame.iloc[int(line), int(col)])
                 if self.extra_cell[key]:
-                    values = cell_value.title().split()
+                    values = cell_value.split()
 
-                    for val in values:
-                        data_line.append(val)
+                    self.append_value_to_data_line(data_line, values)
+
                 else:
-                    data_line.append(cell_value)
+                    self.append_value_to_data_line(data_line, cell_value)
 
             if not self.gender_determined:
                 gender = self.get_gender_from_lists_of_names(data_line)
-                data_line.append(gender)
+                self.append_value_to_data_line(data_line, gender)
 
             list_data.append(data_line)
             next_line += 1
 
         return list_data
+
+    @staticmethod
+    def append_value_to_data_line(data_line: list, values):
+        if type(values) == list:
+            for val in values:
+                data_line.append(val.title())
+        else:
+            try:
+                data_line.append(values.title())
+            except AttributeError:
+                data_line.append(values)
 
     def write_data(self, data_to_write):
         writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
