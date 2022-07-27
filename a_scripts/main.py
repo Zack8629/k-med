@@ -7,7 +7,7 @@ from pandas import read_excel
 result_file_old = 'готовый файл_old.xlsx'
 ready_file = 'готовый файл.xlsm'
 
-prefix = ' old'
+prefix = ' new'
 
 ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
 cogaz_file = f'списки от СК{prefix}/список согаз.xls'
@@ -136,10 +136,19 @@ class Parser:
                     pass
 
                 if num_column in self.sep_column:
-                    cell_value = cell_value.split()
+                    sep = None
+                    try:
+                        sep = self.sep_column[num_column]
+                    except IndexError:
+                        pass
 
-                    if len(cell_value) == 2:
+                    cell_value = cell_value.split(sep=sep)
+
+                    if len(cell_value) == 2 and not sep:
                         cell_value.append('')
+
+                    if sep and sep != ' ':
+                        cell_value[-1] = sep + cell_value[-1]
 
                 self.append_value_to_data_line(data_line, self.determine_gender(cell_value))
 
@@ -497,10 +506,14 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         'Место работы': 11,
     }
 
+    sep_column = {
+        1: ' ',
+    }
+
     Parser(file_to_read=cogaz_file,
            file_to_write=ready_file,
            exclude_column=[11],
-           sep_column=[1],
+           sep_column=sep_column,
            start_line_to_read=20,
            start_column_to_read=1,
            dict_to_write=dict_to_write,
@@ -631,17 +644,23 @@ def consent_pars(show_policies=False, show_data=False, save=False):
         'Отчество': 3,
         'Дата рождения': 4,
         'Адрес проживания': 5,
-        'Место работы': 6,
-        'Дата прикрепления': 7,
-        'Дата окончания': 8,
-        'Наименование программы': 9,
-        'Пол': 10,
+        'Телефон пациента': 6,
+        'Место работы': 7,
+        'Дата прикрепления': 8,
+        'Дата окончания': 9,
+        'Наименование программы': 10,
+        'Пол': 11,
+    }
+
+    sep_column = {
+        3: ' ',
+        5: '8-',
     }
 
     Parser(file_to_read=consent_file,
            file_to_write=ready_file,
            exclude_column=[10],
-           sep_column=[3],
+           sep_column=sep_column,
            start_line_to_read=11,
            start_column_to_read=2,
            step_line=14,
