@@ -7,7 +7,7 @@ from pandas import read_excel
 result_file_old = 'готовый файл_old.xlsx'
 ready_file = 'готовый файл.xlsm'
 
-prefix = ' new'
+prefix = ' old'
 
 ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
 cogaz_file = f'списки от СК{prefix}/список согаз.xls'
@@ -69,17 +69,11 @@ class Parser:
     }
 
     def __init__(self, file_to_read, file_to_write, sheet_num_to_read=0, sheet_num_to_write=0,
-                 exclude_column=None, sep_column=None, start_line_to_read=0,
-                 start_column_to_read=0, step_line=0, dict_to_write=None, extra_cell=None,
-                 position_policy_in_data=0, show_policies=False, show_data=False, save=True):
+                 exclude_column=(), sep_column=(), start_line_to_read=0, start_column_to_read=0,
+                 step_line=0, dict_to_write: dict = None, extra_cell=None,
+                 show_policies=False, show_data=False, save=True):
 
         self.gender_determined = False
-
-        if sep_column is None:
-            sep_column = []
-
-        if exclude_column is None:
-            exclude_column = []
 
         self.file_to_read = file_to_read
         self.sheet_num_to_read = sheet_num_to_read
@@ -88,15 +82,13 @@ class Parser:
         self.start_line_to_read = start_line_to_read
         self.start_column_to_read = start_column_to_read
         self.step_line = step_line
-        self.show_data = show_data
-
-        if dict_to_write is None:
-            dict_to_write = {}
 
         self.file_to_write = file_to_write
-        self.dict_to_write = dict_to_write
-        self.position_policy_in_data = position_policy_in_data
         self.sheet_num_to_write = sheet_num_to_write
+        self.dict_to_write = dict_to_write
+        self.position_policy_in_data = self.dict_to_write['Номер полиса']
+
+        self.show_data = show_data
         self.show_policies = show_policies
         self.save = save
 
@@ -108,23 +100,21 @@ class Parser:
     def get_data_to_write(self):
         data_frame = read_excel(self.file_to_read, sheet_name=self.sheet_num_to_read)
 
-        start_line = self.start_line_to_read
+        line_to_read = self.start_line_to_read
         last_line = data_frame.shape[0]
 
         start_column = self.start_column_to_read
         last_column = data_frame.shape[1]
 
         list_data = []
-        next_line = start_line
-        for num_line in range(start_line, last_line):
-
-            val_line = str(data_frame.iloc[next_line, start_column])
+        while line_to_read < last_line:
+            val_line = str(data_frame.iloc[line_to_read, start_column])
             if val_line == 'nan' or val_line.isspace():
-                next_line += self.step_line
-                if next_line > last_line:
+                line_to_read += self.step_line
+                if line_to_read > last_line:
                     break
 
-                val_line = str(data_frame.iloc[next_line, start_column])
+                val_line = str(data_frame.iloc[line_to_read, start_column])
                 if val_line == 'nan' or val_line.isspace():
                     break
 
@@ -133,16 +123,17 @@ class Parser:
                 if num_column in self.exclude_column:
                     continue
 
-                cell_value = str(data_frame.iloc[next_line, num_column])
+                cell_value = str(data_frame.iloc[line_to_read, num_column])
+
+                if cell_value == 'nan' or cell_value.isspace():
+                    self.append_value_to_data_line(data_line, None)
+                    continue
 
                 try:
                     cell_value = datetime.strptime(cell_value,
                                                    '%Y-%m-%d %H:%M:%S').strftime('%d.%m.%Y')
                 except ValueError:
                     pass
-
-                if cell_value == 'nan' or cell_value.isspace():
-                    cell_value = None
 
                 if num_column in self.sep_column:
                     cell_value = cell_value.split()
@@ -166,7 +157,7 @@ class Parser:
                 self.append_value_to_data_line(data_line, gender)
 
             list_data.append(data_line)
-            next_line += 1
+            line_to_read += 1
 
         return list_data
 
@@ -187,33 +178,35 @@ class Parser:
 
         last_line_the_file = writable_sheet.max_row
         line_to_write = last_line_the_file + 1
-
         first_column = writable_sheet.min_column
 
         policies = self.get_list_policies(writable_sheet=writable_sheet, policies_column=10)
 
         if self.show_policies:
-            print(policies)
+            print(f'policies => {policies}')
 
         policy_position = self.position_policy_in_data
 
-        next_line = 0
-        for line in data_to_write:
+        for idx_line, line in enumerate(data_to_write):
             if line[policy_position] in policies:
                 if self.show_policies:
                     print(f'The policy: "{line[policy_position]}" is already in the recorded file')
                 continue
 
-            writable_sheet.cell(row=line_to_write + next_line,
-                                column=first_column).value = last_line_the_file + next_line
+            writable_sheet.cell(row=line_to_write + idx_line,
+                                column=first_column).value = last_line_the_file + idx_line
 
-            for idx_value, value in enumerate(line):
-                column_to_write = self.dict_to_write.get(idx_value)
-                if column_to_write:
-                    writable_sheet.cell(row=line_to_write + next_line,
-                                        column=column_to_write).value = value
+            for key, num_value in self.dict_to_write.items():
+                column_to_write = self.column_to_write.get(key)
+                value = None
 
-            next_line += 1
+                try:
+                    value = line[num_value]
+                except IndexError:
+                    pass
+
+                writable_sheet.cell(row=line_to_write + idx_line,
+                                    column=column_to_write).value = value
 
         if self.save:
             self.save_file_to_exel(writable_file)
@@ -222,10 +215,10 @@ class Parser:
 
     @staticmethod
     def print_data_for_line(data):
-        for li in data:
+        for line in data:
             print()
 
-            for val in enumerate(li):
+            for val in enumerate(line):
                 print(val)
 
     def determine_gender(self, val):
@@ -455,19 +448,20 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
     exclude_column = [8, 9, 13, 16, 17]
 
     dict_to_write = {
-        0: 10,
-        1: 2,
-        2: 3,
-        3: 4,
-        4: 6,
-        5: 5,
-        6: 24,
-        7: 13,
-        8: 7,
-        9: 8,
-        10: 14,
-        11: 15,
-        16: 26,
+        'Номер полиса': 0,
+        'Фамилия': 1,
+        'Имя': 2,
+        'Отчество': 3,
+        'Дата рождения': 4,
+        'Пол': 5,
+        'Адрес проживания': 6,
+        'Наименование программы': 7,
+        'Дата прикрепления': 8,
+        'Дата окончания': 9,
+        'Расширение': 10,
+        'Ограничение': 11,
+        'СНИЛС': 12,
+        'Место работы': 16,
     }
 
     extra_cell = {
@@ -479,8 +473,7 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
            exclude_column=exclude_column,
            start_line_to_read=12,
            start_column_to_read=1,
-           step_line=12,
-           position_policy_in_data=0,
+           # step_line=12,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -490,17 +483,18 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
 
 def cogaz_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 2,
-        1: 3,
-        2: 4,
-        3: 6,
-        4: 5,
-        5: 24,
-        7: 10,
-        8: 7,
-        9: 8,
-        10: 13,
-        11: 26,
+        'Фамилия': 0,
+        'Имя': 1,
+        'Отчество': 2,
+        'Дата рождения': 3,
+        'Пол': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Номер полиса': 7,
+        'Дата прикрепления': 8,
+        'Дата окончания': 9,
+        'Наименование программы': 10,
+        'Место работы': 11,
     }
 
     Parser(file_to_read=cogaz_file,
@@ -509,7 +503,6 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
            sep_column=[1],
            start_line_to_read=20,
            start_column_to_read=1,
-           position_policy_in_data=7,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -518,17 +511,18 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
 
 def reso_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 2,
-        1: 3,
-        2: 4,
-        3: 6,
-        4: 5,
-        5: 24,
-        7: 10,
-        8: 7,
-        9: 8,
-        10: 13,
-        11: 26,
+        'Фамилия': 0,
+        'Имя': 1,
+        'Отчество': 2,
+        'Дата рождения': 3,
+        'Пол': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Номер полиса': 7,
+        'Дата прикрепления': 8,
+        'Дата окончания': 9,
+        'Наименование программы': 10,
+        'Место работы': 11,
     }
 
     Parser(file_to_read=reso_file,
@@ -537,7 +531,6 @@ def reso_pars(show_policies=False, show_data=False, save=False):
            sep_column=[2],
            start_line_to_read=7,
            start_column_to_read=2,
-           position_policy_in_data=7,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -546,13 +539,14 @@ def reso_pars(show_policies=False, show_data=False, save=False):
 
 def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 2,
-        1: 3,
-        2: 4,
-        3: 5,
-        4: 6,
-        5: 24,
-        7: 10,
+        'Фамилия': 0,
+        'Имя': 1,
+        'Отчество': 2,
+        'Пол': 3,
+        'Дата рождения': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Номер полиса': 7,
     }
 
     Parser(file_to_read=rosgosstrakh_file,
@@ -561,7 +555,6 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
            start_line_to_read=6,
            start_column_to_read=2,
            step_line=3,
-           position_policy_in_data=7,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -570,17 +563,17 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
 
 def alfa_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 10,
-        1: 2,
-        2: 3,
-        3: 4,
-        4: 6,
-        5: 24,
-        6: 26,
-        7: 7,
-        8: 8,
-        9: 13,
-        10: 5,
+        'Номер полиса': 0,
+        'Фамилия': 1,
+        'Имя': 2,
+        'Отчество': 3,
+        'Дата рождения': 4,
+        'Адрес проживания': 5,
+        'Место работы': 6,
+        'Дата прикрепления': 7,
+        'Дата окончания': 8,
+        'Наименование программы': 9,
+        'Пол': 10,
     }
 
     Parser(file_to_read=alpha_file,
@@ -589,7 +582,6 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
            start_line_to_read=7,
            start_column_to_read=1,
            step_line=9,
-           position_policy_in_data=0,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -598,18 +590,18 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
 
 def renaissance_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 2,
-        1: 3,
-        2: 4,
-        3: 6,
-        4: 24,
-        5: 22,
-        6: 10,
-        8: 7,
-        11: 8,
-        13: 13,
-        14: 26,
-        15: 5,
+        'Фамилия': 0,
+        'Имя': 1,
+        'Отчество': 2,
+        'Дата рождения': 3,
+        'Адрес проживания': 4,
+        'Телефон пациента': 5,
+        'Номер полиса': 6,
+        'Дата прикрепления': 8,
+        'Дата окончания': 11,
+        'Наименование программы': 13,
+        'Место работы': 14,
+        'Пол': 15,
     }
 
     extra_cell = {
@@ -624,7 +616,6 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
            sep_column=[1],
            start_line_to_read=20,
            start_column_to_read=0,
-           position_policy_in_data=6,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -634,26 +625,26 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
 
 def consent_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 10,
-        1: 2,
-        2: 3,
-        3: 4,
-        4: 6,
-        5: 24,
-        6: 26,
-        7: 7,
-        8: 8,
-        9: 13,
-        11: 5,
+        'Номер полиса': 0,
+        'Фамилия': 1,
+        'Имя': 2,
+        'Отчество': 3,
+        'Дата рождения': 4,
+        'Адрес проживания': 5,
+        'Место работы': 6,
+        'Дата прикрепления': 7,
+        'Дата окончания': 8,
+        'Наименование программы': 9,
+        'Пол': 10,
     }
 
     Parser(file_to_read=consent_file,
            file_to_write=ready_file,
+           exclude_column=[10],
            sep_column=[3],
            start_line_to_read=11,
            start_column_to_read=2,
            step_line=14,
-           position_policy_in_data=0,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
@@ -662,18 +653,18 @@ def consent_pars(show_policies=False, show_data=False, save=False):
 
 def alliance_pars(show_policies=False, show_data=False, save=False):
     dict_to_write = {
-        0: 10,
-        1: 2,
-        2: 3,
-        3: 4,
-        4: 6,
-        6: 24,
-        7: 22,
-        9: 26,
-        11: 7,
-        13: 8,
-        14: 13,
-        15: 5,
+        'Номер полиса': 0,
+        'Фамилия': 1,
+        'Имя': 2,
+        'Отчество': 3,
+        'Дата рождения': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Место работы': 7,
+        'Дата прикрепления': 9,
+        'Дата окончания': 11,
+        'Наименование программы': 12,
+        'Пол': 13,
     }
 
     extra_cell = {
@@ -684,11 +675,11 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
 
     Parser(file_to_read=alliance_file,
            file_to_write=ready_file,
+           exclude_column=[5, 8],
            sep_column=[3],
            start_line_to_read=16,
            start_column_to_read=2,
            step_line=14,
-           position_policy_in_data=0,
            dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
