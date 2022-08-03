@@ -1,38 +1,14 @@
 import os
 from datetime import datetime
+from typing import Union
 
 from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 from pandas import read_excel
 
-prefix = ''
-
-ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
-cogaz_file = f'списки от СК{prefix}/список согаз.xls'
-reso_file = f'списки от СК{prefix}/список ресо.xls'
-rosgosstrakh_file = f'списки от СК{prefix}/список росгострах.xls'
-alpha_file = f'списки от СК{prefix}/список Альфа страхование.xlsx'
-renaissance_file = f'списки от СК{prefix}/список ренессанс.xls'
-consent_file = f'списки от СК{prefix}/СК Согласие.xls'
-alliance_file = f'списки от СК{prefix}/Альянс.xls'
-
-
-def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
-    try:
-        os.makedirs(path_to_save)
-    except FileExistsError:
-        pass
-
-    name_source_file = source_file.split(sep='/')[-1]
-    to_csv_file = f'{path_to_save}/{name_source_file}.csv'
-
-    data_frame = read_excel(source_file, sheet_name=sheet_num)
-    data_frame.to_csv(to_csv_file)
-
-    print(f'"{name_source_file}" copied to CSV format!')
-
 
 class Parser:
+    source_path_to_read = f'списки от СК'
     ready_file = 'готовый файл.xlsm'
 
     female_gender = 'Ж'
@@ -71,11 +47,14 @@ class Parser:
         'Электронная почта': 27
     }
 
-    def __init__(self, file_to_read: str, dict_to_write: dict, sheet_num_to_read=0,
-                 start_line_to_read=0, start_column_to_read=0, exclude_column: (list | tuple) = (),
-                 sep_column: (list | tuple) = (), step_line=0, extra_cell: dict = (),
-                 file_to_write=ready_file, sheet_num_to_write=0,
-                 show_policies=False, show_data=False, save=True):
+    def __init__(self, file_to_read: str, dict_to_write: dict = (), sheet_num_to_read=0,
+                 start_line_to_read=0, start_column_to_read=0,
+                 exclude_column: Union[list, tuple] = (), sep_column: dict = (),
+                 step_line=0, extra_cell: dict = (), file_to_write=ready_file,
+                 sheet_num_to_write=0, show_policies=False, show_data=False, save=True):
+
+        if len(file_to_read.split("/")) == 1:
+            file_to_read = f'{self.source_path_to_read}/{file_to_read}'
 
         self.file_to_read = file_to_read
         self.sheet_num_to_read = sheet_num_to_read
@@ -483,6 +462,26 @@ class Parser:
         except KeyError as key_error:
             print(f'Key "{key_error}" not found!')
 
+        except TypeError as type_error:
+            print(f'type_error! {type_error}')
+
+    def copy_to_csv_format(self, source_file: str = None, path_to_save='./csv_files', sheet_num=0):
+        if not source_file:
+            source_file = self.file_to_read
+
+        try:
+            os.makedirs(path_to_save)
+        except FileExistsError:
+            pass
+
+        name_source_file = source_file.split(sep='/')[-1]
+        to_csv_file = f'{path_to_save}/{name_source_file}.csv'
+
+        data_frame = read_excel(source_file, sheet_name=sheet_num)
+        data_frame.to_csv(to_csv_file)
+
+        print(f'"{name_source_file}" copied to CSV format!')
+
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
     exclude_column = (8, 9, 13, 16, 17)
@@ -508,7 +507,7 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
         '8 1': False,
     }
 
-    Parser(file_to_read=ingosstrakh_file,
+    Parser(file_to_read='список ингосстрах.XLS',
            dict_to_write=dict_to_write,
            start_line_to_read=12,
            start_column_to_read=1,
@@ -539,7 +538,7 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         1: ' ',
     }
 
-    Parser(file_to_read=cogaz_file,
+    Parser(file_to_read='список согаз.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=1,
@@ -566,12 +565,16 @@ def reso_pars(show_policies=False, show_data=False, save=False):
         'Место работы': 11,
     }
 
-    Parser(file_to_read=reso_file,
+    sep_column = {
+        2: ' ',
+    }
+
+    Parser(file_to_read='список ресо.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=2,
            exclude_column=[12],
-           sep_column=[2],
+           sep_column=sep_column,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -589,11 +592,15 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
         'Номер полиса': 7,
     }
 
-    Parser(file_to_read=rosgosstrakh_file,
+    sep_column = {
+        2: ' ',
+    }
+
+    Parser(file_to_read='список росгострах.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=6,
            start_column_to_read=2,
-           sep_column=[2],
+           sep_column=sep_column,
            step_line=3,
            show_policies=show_policies,
            show_data=show_data,
@@ -615,11 +622,15 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
         'Пол': 10,
     }
 
-    Parser(file_to_read=alpha_file,
+    sep_column = {
+        2: ' ',
+    }
+
+    Parser(file_to_read='список Альфа страхование.xlsx',
            dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=1,
-           sep_column=[2],
+           sep_column=sep_column,
            step_line=9,
            show_policies=show_policies,
            show_data=show_data,
@@ -642,18 +653,22 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         'Пол': 15,
     }
 
+    sep_column = {
+        1: ' ',
+    }
+
     extra_cell = {
         '16 2': True,
         '18 2': False,
         '14 2': False,
     }
 
-    Parser(file_to_read=renaissance_file,
+    Parser(file_to_read='список ренессанс.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=0,
            exclude_column=[0, 3],
-           sep_column=[1],
+           sep_column=sep_column,
            extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
@@ -681,7 +696,7 @@ def consent_pars(show_policies=False, show_data=False, save=False):
         5: '8-',
     }
 
-    Parser(file_to_read=consent_file,
+    Parser(file_to_read='СК Согласие.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=11,
            start_column_to_read=2,
@@ -709,18 +724,22 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
         'Пол': 13,
     }
 
+    sep_column = {
+        3: ' ',
+    }
+
     extra_cell = {
         '9 3': False,
         '11 3': True,
         '14 1': False,
     }
 
-    Parser(file_to_read=alliance_file,
+    Parser(file_to_read='Альянс.xls',
            dict_to_write=dict_to_write,
            start_line_to_read=16,
            start_column_to_read=2,
            exclude_column=[5, 8],
-           sep_column=[3],
+           sep_column=sep_column,
            step_line=14,
            extra_cell=extra_cell,
            show_policies=show_policies,
@@ -728,7 +747,7 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
            save=save).pars()
 
 
-def class_pars(show_policies=False, show_data=False, save=False):
+def parse_files(show_policies=False, show_data=False, save=False):
     ingosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
     cogaz_pars(show_policies=show_policies, show_data=show_data, save=save)
     reso_pars(show_policies=show_policies, show_data=show_data, save=save)
@@ -746,7 +765,7 @@ def main(num_runs=1, show_policies=False, show_data=False, save=True):
     print()
 
     for i in range(num_runs):
-        class_pars(show_policies=show_policies, show_data=show_data, save=save)
+        parse_files(show_policies=show_policies, show_data=show_data, save=save)
 
 
 if __name__ == '__main__':
