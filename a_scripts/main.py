@@ -21,6 +21,9 @@ renaissance_file = f'списки от СК{prefix}/список ренесса�
 consent_file = f'списки от СК{prefix}/СК Согласие.xls'
 alliance_file = f'списки от СК{prefix}/Альянс.xls'
 
+female_names_file = 'списки имён/женские имена.txt'
+male_names_file = 'списки имён/мужские имена.txt'
+
 
 def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
     try:
@@ -193,6 +196,8 @@ class Parser:
 
         new_file_to_write.save(self.file_to_write)
 
+        print(f'Created file to write "{self.file_to_write}"')
+
     def write_data(self, data_to_write):
         try:
             writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
@@ -267,6 +272,18 @@ class Parser:
         return val
 
     def get_gender_from_lists_of_names(self, data_line):
+        try:
+            with open(female_names_file, 'r', encoding='utf-8') as female:
+                female_names = female.read()
+        except FileNotFoundError:
+            female_names = ()
+
+        try:
+            with open(male_names_file, 'r', encoding='utf-8') as male:
+                male_names = male.read()
+        except FileNotFoundError:
+            male_names = ()
+
         list_female_names = ['Ава', 'Августа', 'Аврелия', 'Аврора', 'Агата', 'Агафья', 'Агнес',
                              'Агнесса', 'Агния', 'Аделаида', 'Аделина', 'Адриенна', 'Азиза',
                              'Аида', 'Айгуль', 'Алдона', 'Алевтина', 'Александра', 'Алима',
@@ -427,10 +444,15 @@ class Parser:
                            'Салихат', 'Федор']
 
         for val in data_line:
-            if val in list_female_names:
+            if not val:
+                continue
+
+            if val in list_female_names or val in female_names:
+                print(f'VAL = {val} => {self.female_gender}')
                 return self.female_gender
 
-            if val in list_male_names:
+            if val in list_male_names or val in male_names:
+                print(f'VAL = {val} => {self.male_gender}')
                 return self.male_gender
 
     def get_list_policies(self, writable_sheet):
