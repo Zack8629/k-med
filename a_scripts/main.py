@@ -2,12 +2,13 @@ import os
 from datetime import datetime
 
 from openpyxl import load_workbook
+from openpyxl.workbook import Workbook
 from pandas import read_excel
 
 result_file_old = 'готовый файл_old.xlsx'
 ready_file = 'готовый файл.xlsm'
 
-prefix = ' new'
+prefix = ''
 
 ingosstrakh_file_new = f'списки от СК{prefix}/список ингосстрах_new.XLS'
 
@@ -41,7 +42,6 @@ class Parser:
     male_gender = 'М'
 
     column_to_write = {
-        'Пропустить': None,
         'Порядковый номер': 1,
         'Фамилия': 2,
         'Имя': 3,
@@ -184,15 +184,29 @@ class Parser:
             except AttributeError:
                 data_line.append(values)
 
+    def create_file_to_write(self):
+        new_file_to_write = Workbook()
+        writable_sheet = new_file_to_write.worksheets[0]
+
+        for value, num_column in self.column_to_write.items():
+            writable_sheet.cell(row=1, column=num_column).value = value
+
+        new_file_to_write.save(self.file_to_write)
+
     def write_data(self, data_to_write):
-        writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
+        try:
+            writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
+        except FileNotFoundError:
+            self.create_file_to_write()
+            writable_file = load_workbook(self.file_to_write, read_only=False, keep_vba=True)
+
         writable_sheet = writable_file.worksheets[self.sheet_num_to_write]
 
         last_line_the_file = writable_sheet.max_row
         line_to_write = last_line_the_file + 1
         first_column = writable_sheet.min_column
 
-        policies = self.get_list_policies(writable_sheet=writable_sheet, policies_column=10)
+        policies = self.get_list_policies(writable_sheet=writable_sheet)
 
         if self.show_policies:
             print(f'policies => {policies}')
@@ -419,10 +433,10 @@ class Parser:
             if val in list_male_names:
                 return self.male_gender
 
-    @staticmethod
-    def get_list_policies(writable_sheet, policies_column=10):
+    def get_list_policies(self, writable_sheet):
         start_line_file = 2
         last_line_file = writable_sheet.max_row
+        policies_column = self.column_to_write['Номер полиса']
 
         list_policies = []
         for line_pol in range(start_line_file, last_line_file + 1):
