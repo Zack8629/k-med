@@ -5,12 +5,7 @@ from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 from pandas import read_excel
 
-result_file_old = 'готовый файл_old.xlsx'
-ready_file = 'готовый файл.xlsm'
-
 prefix = ''
-
-ingosstrakh_file_new = f'списки от СК{prefix}/список ингосстрах_new.XLS'
 
 ingosstrakh_file = f'списки от СК{prefix}/список ингосстрах.XLS'
 cogaz_file = f'списки от СК{prefix}/список согаз.xls'
@@ -20,9 +15,6 @@ alpha_file = f'списки от СК{prefix}/список Альфа страх
 renaissance_file = f'списки от СК{prefix}/список ренессанс.xls'
 consent_file = f'списки от СК{prefix}/СК Согласие.xls'
 alliance_file = f'списки от СК{prefix}/Альянс.xls'
-
-female_names_file = 'списки имён/женские имена.txt'
-male_names_file = 'списки имён/мужские имена.txt'
 
 
 def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
@@ -41,8 +33,13 @@ def copy_to_csv_format(source_file, path_to_save='./csv_files', sheet_num=0):
 
 
 class Parser:
+    ready_file = 'готовый файл.xlsm'
+
     female_gender = 'Ж'
     male_gender = 'М'
+
+    female_names_file = 'списки имён/женские имена.txt'
+    male_names_file = 'списки имён/мужские имена.txt'
 
     column_to_write = {
         'Порядковый номер': 1,
@@ -74,34 +71,30 @@ class Parser:
         'Электронная почта': 27
     }
 
-    def __init__(self, file_to_read, file_to_write, sheet_num_to_read=0, sheet_num_to_write=0,
-                 exclude_column=(), sep_column=(), start_line_to_read=0, start_column_to_read=0,
-                 step_line=0, dict_to_write: dict = None, extra_cell=None,
+    def __init__(self, file_to_read: str, dict_to_write: dict, sheet_num_to_read=0,
+                 start_line_to_read=0, start_column_to_read=0, exclude_column: (list | tuple) = (),
+                 sep_column: (list | tuple) = (), step_line=0, extra_cell: dict = (),
+                 file_to_write=ready_file, sheet_num_to_write=0,
                  show_policies=False, show_data=False, save=True):
-
-        self.gender_determined = False
 
         self.file_to_read = file_to_read
         self.sheet_num_to_read = sheet_num_to_read
-        self.exclude_column = exclude_column
-        self.sep_column = sep_column
         self.start_line_to_read = start_line_to_read
         self.start_column_to_read = start_column_to_read
+        self.exclude_column = exclude_column
+        self.sep_column = sep_column
         self.step_line = step_line
+        self.extra_cell = extra_cell
 
         self.file_to_write = file_to_write
         self.sheet_num_to_write = sheet_num_to_write
         self.dict_to_write = dict_to_write
-        self.position_policy_in_data = self.dict_to_write['Номер полиса']
 
         self.show_data = show_data
         self.show_policies = show_policies
         self.save = save
 
-        if extra_cell is None:
-            extra_cell = {}
-
-        self.extra_cell = extra_cell
+        self.gender_determined = False
 
     def get_data_to_write(self):
         data_frame = read_excel(self.file_to_read, sheet_name=self.sheet_num_to_read)
@@ -212,12 +205,10 @@ class Parser:
         first_column = writable_sheet.min_column
 
         policies = self.get_list_policies(writable_sheet=writable_sheet)
-
         if self.show_policies:
             print(f'policies => {policies}')
 
-        policy_position = self.position_policy_in_data
-
+        policy_position = self.dict_to_write['Номер полиса']
         for idx_line, line in enumerate(data_to_write):
             if line[policy_position] in policies:
                 if self.show_policies:
@@ -273,13 +264,13 @@ class Parser:
 
     def get_gender_from_lists_of_names(self, data_line):
         try:
-            with open(female_names_file, 'r', encoding='utf-8') as female:
+            with open(self.female_names_file, 'r', encoding='utf-8') as female:
                 female_names = female.read()
         except FileNotFoundError:
             female_names = ()
 
         try:
-            with open(male_names_file, 'r', encoding='utf-8') as male:
+            with open(self.male_names_file, 'r', encoding='utf-8') as male:
                 male_names = male.read()
         except FileNotFoundError:
             male_names = ()
@@ -448,11 +439,9 @@ class Parser:
                 continue
 
             if val in list_female_names or val in female_names:
-                print(f'VAL = {val} => {self.female_gender}')
                 return self.female_gender
 
             if val in list_male_names or val in male_names:
-                print(f'VAL = {val} => {self.male_gender}')
                 return self.male_gender
 
     def get_list_policies(self, writable_sheet):
@@ -496,7 +485,7 @@ class Parser:
 
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
-    exclude_column = [8, 9, 13, 16, 17]
+    exclude_column = (8, 9, 13, 16, 17)
 
     dict_to_write = {
         'Номер полиса': 0,
@@ -520,15 +509,13 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=ingosstrakh_file,
-           file_to_write=ready_file,
-           exclude_column=exclude_column,
+           dict_to_write=dict_to_write,
            start_line_to_read=12,
            start_column_to_read=1,
-           # step_line=12,
-           dict_to_write=dict_to_write,
+           exclude_column=exclude_column,
+           extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
-           extra_cell=extra_cell,
            save=save).pars()
 
 
@@ -553,12 +540,11 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=cogaz_file,
-           file_to_write=ready_file,
-           exclude_column=[11],
-           sep_column=sep_column,
+           dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=1,
-           dict_to_write=dict_to_write,
+           exclude_column=[11],
+           sep_column=sep_column,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -581,12 +567,11 @@ def reso_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=reso_file,
-           file_to_write=ready_file,
-           exclude_column=[12],
-           sep_column=[2],
+           dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=2,
-           dict_to_write=dict_to_write,
+           exclude_column=[12],
+           sep_column=[2],
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -605,12 +590,11 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=rosgosstrakh_file,
-           file_to_write=ready_file,
-           sep_column=[2],
+           dict_to_write=dict_to_write,
            start_line_to_read=6,
            start_column_to_read=2,
+           sep_column=[2],
            step_line=3,
-           dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -632,12 +616,11 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=alpha_file,
-           file_to_write=ready_file,
-           sep_column=[2],
+           dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=1,
+           sep_column=[2],
            step_line=9,
-           dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -666,15 +649,14 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=renaissance_file,
-           file_to_write=ready_file,
-           exclude_column=[0, 3],
-           sep_column=[1],
+           dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=0,
-           dict_to_write=dict_to_write,
+           exclude_column=[0, 3],
+           sep_column=[1],
+           extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
-           extra_cell=extra_cell,
            save=save).pars()
 
 
@@ -700,13 +682,12 @@ def consent_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=consent_file,
-           file_to_write=ready_file,
-           exclude_column=[10],
-           sep_column=sep_column,
+           dict_to_write=dict_to_write,
            start_line_to_read=11,
            start_column_to_read=2,
+           exclude_column=[10],
+           sep_column=sep_column,
            step_line=14,
-           dict_to_write=dict_to_write,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -735,16 +716,15 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
     }
 
     Parser(file_to_read=alliance_file,
-           file_to_write=ready_file,
-           exclude_column=[5, 8],
-           sep_column=[3],
+           dict_to_write=dict_to_write,
            start_line_to_read=16,
            start_column_to_read=2,
+           exclude_column=[5, 8],
+           sep_column=[3],
            step_line=14,
-           dict_to_write=dict_to_write,
+           extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
-           extra_cell=extra_cell,
            save=save).pars()
 
 
