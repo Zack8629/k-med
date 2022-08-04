@@ -114,12 +114,7 @@ class Parser:
                     pass
 
                 if num_column in self.sep_column:
-                    sep = None
-                    try:
-                        sep = self.sep_column[num_column]
-                    except IndexError:
-                        pass
-
+                    sep = self.sep_column.get(num_column)
                     cell_value = cell_value.split(sep=sep)
 
                     if len(cell_value) == 2 and not sep:
@@ -413,15 +408,13 @@ class Parser:
                            'Артем', 'Ахмед', 'Данил', 'Кеннет', 'Марат', 'Петр', 'Рустем',
                            'Салихат', 'Федор']
 
-        for val in data_line:
-            if not val:
-                continue
+        val = data_line[self.dict_to_write['Имя']]
 
-            if val in list_female_names or val in female_names:
-                return self.female_gender
+        if val in list_female_names or val in female_names:
+            return self.female_gender
 
-            if val in list_male_names or val in male_names:
-                return self.male_gender
+        if val in list_male_names or val in male_names:
+            return self.male_gender
 
     def get_list_policies(self, writable_sheet):
         start_line_file = 2
@@ -535,7 +528,7 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        1: ' ',
+        1: None,
     }
 
     Parser(file_to_read='список согаз.xls',
@@ -566,7 +559,7 @@ def reso_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        2: ' ',
+        2: None,
     }
 
     Parser(file_to_read='список ресо.xls',
@@ -593,7 +586,7 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        2: ' ',
+        2: None,
     }
 
     Parser(file_to_read='список росгострах.xls',
@@ -623,7 +616,7 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        2: ' ',
+        2: None
     }
 
     Parser(file_to_read='список Альфа страхование.xlsx',
@@ -654,7 +647,7 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        1: ' ',
+        1: None,
     }
 
     extra_cell = {
@@ -692,7 +685,7 @@ def consent_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        3: ' ',
+        3: None,
         5: '8-',
     }
 
@@ -725,7 +718,7 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
     }
 
     sep_column = {
-        3: ' ',
+        3: None,
     }
 
     extra_cell = {
