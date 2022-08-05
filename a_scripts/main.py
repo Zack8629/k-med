@@ -6,9 +6,12 @@ from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 from pandas import read_excel
 
+start_time = datetime.now()
+
 
 class Parser:
-    source_path_to_read = f'списки от СК'
+    root_path = os.getcwd()
+    source_folder = 'списки от СК'
     ready_file = 'готовый файл.xlsm'
 
     female_gender = 'Ж'
@@ -47,16 +50,13 @@ class Parser:
         'Электронная почта': 27
     }
 
-    def __init__(self, file_to_read: str, dict_to_write: dict = (), sheet_num_to_read=0,
+    def __init__(self, folder_to_read: str, dict_to_write: dict = (), sheet_num_to_read=0,
                  start_line_to_read=0, start_column_to_read=0,
                  exclude_column: Union[list, tuple] = (), sep_column: dict = (),
                  step_line=0, extra_cell: dict = (), file_to_write=ready_file,
                  sheet_num_to_write=0, show_policies=False, show_data=False, save=True):
 
-        if len(file_to_read.split("/")) == 1:
-            file_to_read = f'{self.source_path_to_read}/{file_to_read}'
-
-        self.file_to_read = file_to_read
+        self.list_files_to_read = self.get_list_files_to_read(folder_to_read)
         self.sheet_num_to_read = sheet_num_to_read
         self.start_line_to_read = start_line_to_read
         self.start_column_to_read = start_column_to_read
@@ -75,71 +75,91 @@ class Parser:
 
         self.gender_determined = False
 
+    def get_list_files_to_read(self, folder_to_read):
+        list_files = []
+
+        for source_path in os.listdir(self.root_path):
+
+            if source_path.lower() == self.source_folder.lower():
+                for path_folder_to_read in os.listdir(source_path):
+
+                    if path_folder_to_read.lower() == folder_to_read.lower():
+                        path_folder_to_read = os.path.join(source_path, path_folder_to_read)
+
+                        for file_to_read in os.listdir(path_folder_to_read):
+                            path_to_file = os.path.join(path_folder_to_read, file_to_read)
+                            list_files.append(path_to_file)
+                        break
+
+        return list_files
+
     def get_data_to_write(self):
-        data_frame = read_excel(self.file_to_read, sheet_name=self.sheet_num_to_read)
-
-        line_to_read = self.start_line_to_read
-        last_line = data_frame.shape[0]
-
-        start_column = self.start_column_to_read
-        last_column = data_frame.shape[1]
-
         list_data = []
-        while line_to_read < last_line:
-            val_line = str(data_frame.iloc[line_to_read, start_column])
-            if val_line == 'nan' or val_line.isspace():
-                line_to_read += self.step_line
-                if line_to_read > last_line:
-                    break
 
+        for file_to_read in self.list_files_to_read:
+            data_frame = read_excel(file_to_read, sheet_name=self.sheet_num_to_read)
+
+            line_to_read = self.start_line_to_read
+            last_line = data_frame.shape[0]
+
+            start_column = self.start_column_to_read
+            last_column = data_frame.shape[1]
+
+            while line_to_read < last_line:
                 val_line = str(data_frame.iloc[line_to_read, start_column])
                 if val_line == 'nan' or val_line.isspace():
-                    break
+                    line_to_read += self.step_line
+                    if line_to_read > last_line:
+                        break
 
-            data_line = []
-            for num_column in range(start_column, last_column):
-                if num_column in self.exclude_column:
-                    continue
+                    val_line = str(data_frame.iloc[line_to_read, start_column])
+                    if val_line == 'nan' or val_line.isspace():
+                        break
 
-                cell_value = str(data_frame.iloc[line_to_read, num_column])
+                data_line = []
+                for num_column in range(start_column, last_column):
+                    if num_column in self.exclude_column:
+                        continue
 
-                if cell_value == 'nan' or cell_value.isspace():
-                    self.append_value_to_data_line(data_line, None)
-                    continue
+                    cell_value = str(data_frame.iloc[line_to_read, num_column])
 
-                try:
-                    cell_value = datetime.strptime(cell_value,
-                                                   '%Y-%m-%d %H:%M:%S').strftime('%d.%m.%Y')
-                except ValueError:
-                    pass
+                    if cell_value == 'nan' or cell_value.isspace():
+                        self.append_value_to_data_line(data_line, None)
+                        continue
 
-                if num_column in self.sep_column:
-                    sep = self.sep_column.get(num_column)
-                    cell_value = cell_value.split(sep=sep)
+                    try:
+                        cell_value = datetime.strptime(cell_value,
+                                                       '%Y-%m-%d %H:%M:%S').strftime('%d.%m.%Y')
+                    except ValueError:
+                        pass
 
-                    if len(cell_value) == 2 and not sep:
-                        cell_value.append('')
+                    if num_column in self.sep_column:
+                        sep = self.sep_column.get(num_column)
+                        cell_value = cell_value.split(sep=sep)
 
-                    if sep and sep != ' ':
-                        cell_value[-1] = sep + cell_value[-1]
+                        if len(cell_value) == 2 and not sep:
+                            cell_value.append('')
 
-                self.append_value_to_data_line(data_line, self.determine_gender(cell_value))
+                        if sep and sep != ' ':
+                            cell_value[-1] = sep + cell_value[-1]
 
-            for key in self.extra_cell:
-                line, col = key.split()
-                cell_value = str(data_frame.iloc[int(line), int(col)])
+                    self.append_value_to_data_line(data_line, self.determine_gender(cell_value))
 
-                if self.extra_cell[key]:
-                    cell_value = cell_value.split()
+                for key in self.extra_cell:
+                    line, col = key.split()
+                    cell_value = str(data_frame.iloc[int(line), int(col)])
 
-                self.append_value_to_data_line(data_line, cell_value)
+                    if self.extra_cell[key]:
+                        cell_value = cell_value.split()
 
-            if not self.gender_determined:
-                gender = self.get_gender_from_lists_of_names(data_line)
-                self.append_value_to_data_line(data_line, gender)
+                    self.append_value_to_data_line(data_line, cell_value)
 
-            list_data.append(data_line)
-            line_to_read += 1
+                if not self.gender_determined:
+                    gender = self.get_gender_from_lists_of_names(data_line)
+                    self.append_value_to_data_line(data_line, gender)
+
+                list_data.append(data_line)
+                line_to_read += 1
 
         return list_data
 
@@ -429,16 +449,9 @@ class Parser:
         return list_policies
 
     def save_file_to_exel(self, writable_file):
-        file_to_write = self.file_to_write
-        writable_file.save(file_to_write)
+        writable_file.save(self.file_to_write)
 
-        # sheet_num = self.sheet_num_to_write
-        # sheet_name = writable_file.sheetnames[sheet_num]
-
-        # data_frame = read_excel(file_to_write, sheet_name=sheet_num)
-        # data_frame.to_excel(file_to_write, sheet_name=sheet_name, encoding='utf-8', index=False)
-
-        print(f'Data from "{self.file_to_read}" is written to "{file_to_write}"!')
+        print(f'Data from "{self.list_files_to_read}" is written to "{self.file_to_write}"!')
 
     def pars(self):
         try:
@@ -458,10 +471,8 @@ class Parser:
         except TypeError as type_error:
             print(f'type_error! {type_error}')
 
-    def copy_to_csv_format(self, source_file: str = None, path_to_save='./csv_files', sheet_num=0):
-        if not source_file:
-            source_file = self.file_to_read
-
+    @staticmethod
+    def copy_to_csv_format(source_file: str, path_to_save='./csv_files', sheet_num=0):
         try:
             os.makedirs(path_to_save)
         except FileExistsError:
@@ -500,7 +511,7 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
         '8 1': False,
     }
 
-    Parser(file_to_read='список ингосстрах.XLS',
+    Parser(folder_to_read='ингосстрах',
            dict_to_write=dict_to_write,
            start_line_to_read=12,
            start_column_to_read=1,
@@ -531,7 +542,7 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
         1: None,
     }
 
-    Parser(file_to_read='список согаз.xls',
+    Parser(folder_to_read='согаз',
            dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=1,
@@ -562,7 +573,7 @@ def reso_pars(show_policies=False, show_data=False, save=False):
         2: None,
     }
 
-    Parser(file_to_read='список ресо.xls',
+    Parser(folder_to_read='ресо',
            dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=2,
@@ -589,7 +600,7 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
         2: None,
     }
 
-    Parser(file_to_read='список росгострах.xls',
+    Parser(folder_to_read='росгострах',
            dict_to_write=dict_to_write,
            start_line_to_read=6,
            start_column_to_read=2,
@@ -619,7 +630,7 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
         2: None
     }
 
-    Parser(file_to_read='список Альфа страхование.xlsx',
+    Parser(folder_to_read='альфа',
            dict_to_write=dict_to_write,
            start_line_to_read=7,
            start_column_to_read=1,
@@ -656,7 +667,7 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         '14 2': False,
     }
 
-    Parser(file_to_read='список ренессанс.xls',
+    Parser(folder_to_read='ренессанс',
            dict_to_write=dict_to_write,
            start_line_to_read=20,
            start_column_to_read=0,
@@ -689,7 +700,7 @@ def consent_pars(show_policies=False, show_data=False, save=False):
         5: '8-',
     }
 
-    Parser(file_to_read='СК Согласие.xls',
+    Parser(folder_to_read='согласие',
            dict_to_write=dict_to_write,
            start_line_to_read=11,
            start_column_to_read=2,
@@ -727,7 +738,7 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
         '14 1': False,
     }
 
-    Parser(file_to_read='Альянс.xls',
+    Parser(folder_to_read='альянс',
            dict_to_write=dict_to_write,
            start_line_to_read=16,
            start_column_to_read=2,
@@ -763,3 +774,4 @@ def main(num_runs=1, show_policies=False, show_data=False, save=True):
 
 if __name__ == '__main__':
     main()
+    print('Runtime = ', datetime.now() - start_time)
