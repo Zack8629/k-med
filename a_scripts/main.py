@@ -6,19 +6,18 @@ from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 from pandas import read_excel
 
-start_time = datetime.now()
-
 
 class Parser:
     root_path = os.getcwd()
-    source_folder = 'списки от СК'
-    ready_file = 'готовый файл.xlsm'
+    pattern_ready_file = 'готовый файл.xlsm'
+    pattern_source_folder = 'списки от СК old'
+
+    pattern_folder_with_names = 'списки имён'
+    pattern_female_names_file = 'женские имена.txt'
+    pattern_male_names_file = 'мужские имена.txt'
 
     female_gender = 'Ж'
     male_gender = 'М'
-
-    female_names_file = 'списки имён/женские имена.txt'
-    male_names_file = 'списки имён/мужские имена.txt'
 
     column_to_write = {
         'Порядковый номер': 1,
@@ -53,7 +52,7 @@ class Parser:
     def __init__(self, folder_to_read: str, dict_to_write: dict = (), sheet_num_to_read=0,
                  start_line_to_read=0, start_column_to_read=0,
                  exclude_column: Union[list, tuple] = (), sep_column: dict = (),
-                 step_line=0, extra_cell: dict = (), file_to_write=ready_file,
+                 step_line=0, extra_cell: dict = (), file_to_write=pattern_ready_file,
                  sheet_num_to_write=0, show_policies=False, show_data=False, save=True):
 
         self.list_files_to_read = self.get_list_files_to_read(folder_to_read)
@@ -65,9 +64,14 @@ class Parser:
         self.step_line = step_line
         self.extra_cell = extra_cell
 
-        self.file_to_write = file_to_write
+        self.file_to_write = self.validate_file_name(file_to_write)
         self.sheet_num_to_write = sheet_num_to_write
         self.dict_to_write = dict_to_write
+
+        self.female_names_file = self.validate_file_name(self.pattern_female_names_file,
+                                                         self.pattern_folder_with_names)
+        self.male_names_file = self.validate_file_name(self.pattern_male_names_file,
+                                                       self.pattern_folder_with_names)
 
         self.show_data = show_data
         self.show_policies = show_policies
@@ -75,12 +79,24 @@ class Parser:
 
         self.gender_determined = False
 
+    def validate_file_name(self, file_name_pattern, folder=None):
+        if not folder:
+            folder = self.root_path
+        try:
+            for name in os.listdir(folder):
+                if name.lower() == file_name_pattern.lower():
+                    return os.path.join(folder, name)
+        except FileNotFoundError:
+            pass
+
+        return os.path.join(folder, file_name_pattern)
+
     def get_list_files_to_read(self, folder_to_read):
         list_files = []
 
         for source_path in os.listdir(self.root_path):
 
-            if source_path.lower() == self.source_folder.lower():
+            if source_path.lower() == self.pattern_source_folder.lower():
                 for path_folder_to_read in os.listdir(source_path):
 
                     if path_folder_to_read.lower() == folder_to_read.lower():
@@ -774,4 +790,3 @@ def main(num_runs=1, show_policies=False, show_data=False, save=True):
 
 if __name__ == '__main__':
     main()
-    print('Runtime = ', datetime.now() - start_time)
