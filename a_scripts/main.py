@@ -10,7 +10,7 @@ from pandas import read_excel
 class Parser:
     root_path = os.getcwd()
     pattern_ready_file = 'готовый файл.xlsm'
-    pattern_source_folder = 'списки от СК old'
+    pattern_source_folder = 'списки от СК'
 
     pattern_folder_with_names = 'списки имён'
     pattern_female_names_file = 'женские имена.txt'
@@ -55,7 +55,7 @@ class Parser:
                  step_line=0, extra_cell: dict = (), file_to_write=pattern_ready_file,
                  sheet_num_to_write=0, show_policies=False, show_data=False, save=True):
 
-        self.list_files_to_read = self.get_list_files_to_read(folder_to_read)
+        self.list_files_to_read = self._get_list_files_to_read(folder_to_read)
         self.sheet_num_to_read = sheet_num_to_read
         self.start_line_to_read = start_line_to_read
         self.start_column_to_read = start_column_to_read
@@ -64,14 +64,14 @@ class Parser:
         self.step_line = step_line
         self.extra_cell = extra_cell
 
-        self.file_to_write = self.validate_file_name(file_to_write)
+        self.file_to_write = self._validate_file_name(file_to_write)
         self.sheet_num_to_write = sheet_num_to_write
         self.dict_to_write = dict_to_write
 
-        self.female_names_file = self.validate_file_name(self.pattern_female_names_file,
-                                                         self.pattern_folder_with_names)
-        self.male_names_file = self.validate_file_name(self.pattern_male_names_file,
-                                                       self.pattern_folder_with_names)
+        self.female_names_file = self._validate_file_name(self.pattern_female_names_file,
+                                                          self.pattern_folder_with_names)
+        self.male_names_file = self._validate_file_name(self.pattern_male_names_file,
+                                                        self.pattern_folder_with_names)
 
         self.show_data = show_data
         self.show_policies = show_policies
@@ -79,7 +79,7 @@ class Parser:
 
         self.gender_determined = False
 
-    def validate_file_name(self, file_name_pattern, folder=None):
+    def _validate_file_name(self, file_name_pattern, folder=None):
         if not folder:
             folder = self.root_path
         try:
@@ -91,7 +91,7 @@ class Parser:
 
         return os.path.join(folder, file_name_pattern)
 
-    def get_list_files_to_read(self, folder_to_read):
+    def _get_list_files_to_read(self, folder_to_read):
         list_files = []
 
         for source_path in os.listdir(self.root_path):
@@ -113,7 +113,11 @@ class Parser:
         list_data = []
 
         for file_to_read in self.list_files_to_read:
-            data_frame = read_excel(file_to_read, sheet_name=self.sheet_num_to_read)
+            try:
+                data_frame = read_excel(file_to_read, sheet_name=self.sheet_num_to_read)
+            except ValueError:
+                self.list_files_to_read.remove(file_to_read)
+                continue
 
             line_to_read = self.start_line_to_read
             last_line = data_frame.shape[0]
@@ -140,7 +144,7 @@ class Parser:
                     cell_value = str(data_frame.iloc[line_to_read, num_column])
 
                     if cell_value == 'nan' or cell_value.isspace():
-                        self.append_value_to_data_line(data_line, None)
+                        self._append_value_to_data_line(data_line, None)
                         continue
 
                     try:
@@ -159,7 +163,7 @@ class Parser:
                         if sep and sep != ' ':
                             cell_value[-1] = sep + cell_value[-1]
 
-                    self.append_value_to_data_line(data_line, self.determine_gender(cell_value))
+                    self._append_value_to_data_line(data_line, self._determine_gender(cell_value))
 
                 for key in self.extra_cell:
                     line, col = key.split()
@@ -168,11 +172,11 @@ class Parser:
                     if self.extra_cell[key]:
                         cell_value = cell_value.split()
 
-                    self.append_value_to_data_line(data_line, cell_value)
+                    self._append_value_to_data_line(data_line, cell_value)
 
                 if not self.gender_determined:
-                    gender = self.get_gender_from_lists_of_names(data_line)
-                    self.append_value_to_data_line(data_line, gender)
+                    gender = self._get_gender_from_lists_of_names(data_line)
+                    self._append_value_to_data_line(data_line, gender)
 
                 list_data.append(data_line)
                 line_to_read += 1
@@ -180,7 +184,7 @@ class Parser:
         return list_data
 
     @staticmethod
-    def append_value_to_data_line(data_line: list, values):
+    def _append_value_to_data_line(data_line: list, values):
         if type(values) == list:
             for val in values:
                 data_line.append(val.title())
@@ -241,19 +245,20 @@ class Parser:
                                     column=column_to_write).value = value
 
         if self.save:
-            self.save_file_to_exel(writable_file)
+            self._save_file_to_exel(writable_file)
         else:
             print(f'SAVE = {self.save}')
 
     @staticmethod
     def print_data_for_line(data):
-        for line in data:
+        for i, line in enumerate(data):
             print()
+            print(f'Data line "{i}"')
 
             for val in enumerate(line):
                 print(val)
 
-    def determine_gender(self, val):
+    def _determine_gender(self, val):
         female_gender_list = ['WOMEN', 'ЖЕНСКИЙ', 'ЖЕН',
                               'Women', 'Женский', 'Жен', 'Ж',
                               'women', 'женский', 'жен', 'ж']
@@ -272,7 +277,7 @@ class Parser:
 
         return val
 
-    def get_gender_from_lists_of_names(self, data_line):
+    def _get_gender_from_lists_of_names(self, data_line):
         try:
             with open(self.female_names_file, 'r', encoding='utf-8') as female:
                 female_names = female.read()
@@ -445,6 +450,8 @@ class Parser:
                            'Салихат', 'Федор']
 
         val = data_line[self.dict_to_write['Имя']]
+        if not val:
+            return
 
         if val in list_female_names or val in female_names:
             return self.female_gender
@@ -464,10 +471,15 @@ class Parser:
 
         return list_policies
 
-    def save_file_to_exel(self, writable_file):
+    def _save_file_to_exel(self, writable_file):
         writable_file.save(self.file_to_write)
+        name_file_to_write = self.file_to_write.split('/')[-1]
 
-        print(f'Data from "{self.list_files_to_read}" is written to "{self.file_to_write}"!')
+        file_names_to_read = []
+        for path_file in self.list_files_to_read:
+            file_names_to_read.append(path_file.split('/')[-1])
+
+        print(f'Data from "{file_names_to_read}" is written to "{name_file_to_write}"!')
 
     def pars(self):
         try:
@@ -487,20 +499,23 @@ class Parser:
         except TypeError as type_error:
             print(f'type_error! {type_error}')
 
-    @staticmethod
-    def copy_to_csv_format(source_file: str, path_to_save='./csv_files', sheet_num=0):
+    def copy_to_csv_format(self, source_file: str, path_to_save='./csv_files', sheet_num=0):
         try:
             os.makedirs(path_to_save)
         except FileExistsError:
             pass
 
-        name_source_file = source_file.split(sep='/')[-1]
-        to_csv_file = f'{path_to_save}/{name_source_file}.csv'
+        path_source_file = None
+        for file in self.list_files_to_read:
+            if file.split(sep='/')[-1] == source_file:
+                path_source_file = file
 
-        data_frame = read_excel(source_file, sheet_name=sheet_num)
-        data_frame.to_csv(to_csv_file)
-
-        print(f'"{name_source_file}" copied to CSV format!')
+        if path_source_file:
+            to_csv_file = f'{path_to_save}/{source_file}.csv'
+            read_excel(path_source_file, sheet_name=sheet_num).to_csv(to_csv_file)
+            print(f'"{source_file}" copied to CSV format!')
+        else:
+            print(f'File "{source_file}" not found!')
 
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
