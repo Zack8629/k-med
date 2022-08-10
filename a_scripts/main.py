@@ -116,7 +116,12 @@ class Parser:
         for file_to_read in self.list_files_to_read:
             try:
                 data_frame = read_excel(file_to_read, sheet_name=self.sheet_num_to_read)
+
             except ValueError:
+                self.list_files_to_read.remove(file_to_read)
+                continue
+
+            except IsADirectoryError:
                 self.list_files_to_read.remove(file_to_read)
                 continue
 
@@ -496,12 +501,13 @@ class Parser:
 
     def pars(self):
         try:
-            data_to_write = self.get_data_to_write()
+            if self.list_files_to_read:
+                data_to_write = self.get_data_to_write()
 
-            if self.show_data:
-                self.print_data_for_line(data_to_write)
+                if self.show_data:
+                    self.print_data_for_line(data_to_write)
 
-            self.write_data(data_to_write=data_to_write)
+                self.write_data(data_to_write=data_to_write)
 
         except FileNotFoundError as file_not_found:
             print(f'File not found! {file_not_found}')
