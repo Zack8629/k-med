@@ -819,14 +819,11 @@ def parse_files(show_policies=False, show_data=False, save=False):
     renaissance_pars(show_policies=show_policies, show_data=show_data, save=save)
     consent_pars(show_policies=show_policies, show_data=show_data, save=save)
     alliance_pars(show_policies=show_policies, show_data=show_data, save=save)
-    print('Pars DONE!')
-    print()
+    print('Pars DONE!', end='\n\n')
 
 
 def main(num_runs=1, show_policies=False, show_data=False, save=True):
-    print(f'num_runs = {num_runs}')
-    print()
-
+    print(f'num_runs = {num_runs}', end='\n\n')
     for i in range(num_runs):
         parse_files(show_policies=show_policies, show_data=show_data, save=save)
 
