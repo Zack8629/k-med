@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from typing import Union
 
@@ -125,12 +126,15 @@ class Parser:
             start_column = self.start_column_to_read
             last_column = data_frame.shape[1]
 
+            start_table = line_to_read
             while line_to_read < last_line:
                 val_line = str(data_frame.iloc[line_to_read, start_column])
                 if val_line == 'nan' or val_line.isspace():
                     line_to_read += self.step_line
                     if line_to_read > last_line:
                         break
+
+                    start_table = line_to_read
 
                     val_line = str(data_frame.iloc[line_to_read, start_column])
                     if val_line == 'nan' or val_line.isspace():
@@ -155,22 +159,17 @@ class Parser:
 
                     if num_column in self.sep_column:
                         sep = self.sep_column.get(num_column)
-                        cell_value = cell_value.split(sep=sep)
-
-                        if len(cell_value) == 2 and not sep:
-                            cell_value.append('')
-
-                        if sep and sep != ' ':
-                            cell_value[-1] = sep + cell_value[-1]
+                        cell_value = self._split_value(cell_value, sep)
 
                     self._append_value_to_data_line(data_line, self._determine_gender(cell_value))
 
                 for key in self.extra_cell:
                     line, col = key.split()
-                    cell_value = str(data_frame.iloc[int(line), int(col)])
+                    sep = self.extra_cell[key]
+                    cell_value = str(data_frame.iloc[start_table - int(line), int(col)])
 
-                    if self.extra_cell[key]:
-                        cell_value = cell_value.split()
+                    if cell_value and sep:
+                        cell_value = re.split('\n|: |С |По |с |по | Г. | г.', cell_value)
 
                     self._append_value_to_data_line(data_line, cell_value)
 
@@ -184,13 +183,27 @@ class Parser:
         return list_data
 
     @staticmethod
+    def _split_value(cell_value, sep=None):
+        exclude_sep = [' ', '\n']
+
+        cell_value = cell_value.split(sep=sep)
+
+        if len(cell_value) == 2 and not sep:
+            cell_value.append('')
+
+        if sep and sep not in exclude_sep:
+            cell_value[-1] = sep + cell_value[-1]
+
+        return cell_value
+
+    @staticmethod
     def _append_value_to_data_line(data_line: list, values):
         if type(values) == list:
             for val in values:
-                data_line.append(val.title())
+                data_line.append(val.title().strip())
         else:
             try:
-                data_line.append(values.title())
+                data_line.append(values.title().strip())
             except AttributeError:
                 data_line.append(values)
 
@@ -539,7 +552,7 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
     }
 
     extra_cell = {
-        '8 1': False,
+        '4 1': False,
     }
 
     Parser(folder_to_read='ингосстрах',
@@ -625,10 +638,18 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
         'Адрес проживания': 5,
         'Телефон пациента': 6,
         'Номер полиса': 7,
+        'Наименование программы': 10,
+        'Дата прикрепления': 13,
+        'Дата окончания': 14,
+        'Место работы': 16,
     }
 
     sep_column = {
         2: None,
+    }
+
+    extra_cell = {
+        '2 1': True,
     }
 
     Parser(folder_to_read='росгострах',
@@ -637,6 +658,7 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=2,
            sep_column=sep_column,
            step_line=3,
+           extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -681,11 +703,11 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
         'Адрес проживания': 4,
         'Телефон пациента': 5,
         'Номер полиса': 6,
-        'Дата прикрепления': 8,
+        'Наименование программы': 7,
+        'Дата прикрепления': 9,
         'Дата окончания': 11,
-        'Наименование программы': 13,
-        'Место работы': 14,
-        'Пол': 15,
+        'Место работы': 13,
+        'Пол': 14,
     }
 
     sep_column = {
@@ -693,9 +715,9 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
     }
 
     extra_cell = {
-        '16 2': True,
-        '18 2': False,
-        '14 2': False,
+        '2 2': False,
+        '4 2': True,
+        '6 2': False,
     }
 
     Parser(folder_to_read='ренессанс',
@@ -754,9 +776,9 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
         'Телефон пациента': 6,
         'Место работы': 7,
         'Дата прикрепления': 9,
-        'Дата окончания': 11,
-        'Наименование программы': 12,
-        'Пол': 13,
+        'Дата окончания': 10,
+        'Наименование программы': 11,
+        'Пол': 12,
     }
 
     sep_column = {
@@ -764,16 +786,16 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
     }
 
     extra_cell = {
-        '9 3': False,
-        '11 3': True,
-        '14 1': False,
+        '7 3': False,
+        '5 3': True,
+        '2 1': False,
     }
 
     Parser(folder_to_read='альянс',
            dict_to_write=dict_to_write,
            start_line_to_read=16,
-           start_column_to_read=2,
-           exclude_column=[5, 8],
+           start_column_to_read=1,
+           exclude_column=[1, 5, 8],
            sep_column=sep_column,
            step_line=14,
            extra_cell=extra_cell,
