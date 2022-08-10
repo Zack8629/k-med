@@ -491,11 +491,11 @@ class Parser:
 
     def _save_file_to_exel(self, writable_file):
         writable_file.save(self.file_to_write)
-        name_file_to_write = self.file_to_write.split('/')[-1]
+        name_file_to_write = os.path.basename(self.file_to_write)
 
         file_names_to_read = []
         for path_file in self.list_files_to_read:
-            file_names_to_read.append(path_file.split('/')[-1])
+            file_names_to_read.append(os.path.basename(path_file))
 
         print(f'Data from "{file_names_to_read}" is written to "{name_file_to_write}"!')
 
