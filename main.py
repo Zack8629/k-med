@@ -132,15 +132,24 @@ class Parser:
             last_column = data_frame.shape[1]
 
             start_table = line_to_read
+            table_start_value = str(data_frame.iloc[self.start_line_to_read - 1, start_column])
+
             while line_to_read < last_line:
                 val_line = str(data_frame.iloc[line_to_read, start_column])
                 if val_line == 'nan' or val_line.isspace():
-                    line_to_read += self.step_line
-                    if line_to_read > last_line:
+                    if self.step_line:
+                        line_to_read += self.step_line
+                    else:
+                        line_to_read = self._get_next_table(data_frame,
+                                                            last_line,
+                                                            line_to_read,
+                                                            start_column,
+                                                            table_start_value)
+
+                    if line_to_read >= last_line - 1:
                         break
 
                     start_table = line_to_read
-
                     val_line = str(data_frame.iloc[line_to_read, start_column])
                     if val_line == 'nan' or val_line.isspace():
                         break
@@ -174,7 +183,10 @@ class Parser:
                     cell_value = str(data_frame.iloc[start_table - int(line), int(col)])
 
                     if cell_value and sep:
-                        cell_value = re.split('\n|: |С |По |с |по | Г. | г.', cell_value)
+                        if type(sep) == bool:
+                            cell_value = re.split('\n|: |С |По |с |по | Г. | г.', cell_value)
+                        else:
+                            cell_value = re.split(sep, cell_value)
 
                     self._append_value_to_data_line(data_line, cell_value)
 
@@ -186,6 +198,16 @@ class Parser:
                 line_to_read += 1
 
         return list_data
+
+    @staticmethod
+    def _get_next_table(data_frame, last_line, line_to_read, column, table_start_value):
+        for line in range(line_to_read, last_line):
+            val_line = str(data_frame.iloc[line, column])
+            if val_line == table_start_value:
+                return line + 1
+
+            if line >= last_line - 1:
+                return line
 
     @staticmethod
     def _split_value(cell_value, sep=None):
@@ -738,7 +760,7 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
            save=save).pars()
 
 
-def consent_pars(show_policies=False, show_data=False, save=False):
+def consent_pars_13(show_policies=False, show_data=False, save=False):
     dict_to_write = {
         'Номер полиса': 0,
         'Фамилия': 1,
@@ -759,13 +781,47 @@ def consent_pars(show_policies=False, show_data=False, save=False):
         5: '8-',
     }
 
-    Parser(folder_to_read='согласие',
+    Parser(folder_to_read='согласие 13',
            dict_to_write=dict_to_write,
            start_line_to_read=11,
            start_column_to_read=2,
            exclude_column=[10],
            sep_column=sep_column,
            step_line=14,
+           show_policies=show_policies,
+           show_data=show_data,
+           save=save).pars()
+
+
+def consent_pars_15(show_policies=False, show_data=False, save=False):
+    dict_to_write = {
+        'Номер полиса': 0,
+        'Фамилия': 1,
+        'Имя': 2,
+        'Отчество': 3,
+        'Дата рождения': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Наименование программы': 8,
+        'Место работы': 9,
+        'Дата прикрепления': 10,
+        'Дата окончания': 11,
+        'Пол': 12,
+    }
+
+    extra_cell = {
+        '6 2': False,
+        '8 3': False,
+        '9 3': False,
+        '9 5': False,
+    }
+
+    Parser(folder_to_read='согласие 15',
+           dict_to_write=dict_to_write,
+           start_line_to_read=13,
+           start_column_to_read=2,
+           exclude_column=[10],
+           extra_cell=extra_cell,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -817,7 +873,8 @@ def parse_files(show_policies=False, show_data=False, save=False):
     rosgosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
     alfa_pars(show_policies=show_policies, show_data=show_data, save=save)
     renaissance_pars(show_policies=show_policies, show_data=show_data, save=save)
-    consent_pars(show_policies=show_policies, show_data=show_data, save=save)
+    consent_pars_13(show_policies=show_policies, show_data=show_data, save=save)
+    consent_pars_15(show_policies=show_policies, show_data=show_data, save=save)
     alliance_pars(show_policies=show_policies, show_data=show_data, save=save)
     print('Pars DONE!', end='\n\n')
 
