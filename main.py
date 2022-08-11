@@ -11,7 +11,8 @@ from pandas import read_excel
 class Parser:
     root_path = os.getcwd()
     pattern_ready_file = 'готовый файл.xlsm'
-    pattern_source_folder = 'списки от СК'
+    pattern_source_folder = 'списки от СК old'
+    folder_to_move = 'прочитанные файлы'
 
     pattern_folder_with_names = 'списки имён'
     pattern_female_names_file = 'женские имена.txt'
@@ -54,7 +55,8 @@ class Parser:
                  start_line_to_read=0, start_column_to_read=0,
                  exclude_column: Union[list, tuple] = (), sep_column: dict = (),
                  step_line=0, extra_cell: dict = (), file_to_write=pattern_ready_file,
-                 sheet_num_to_write=0, show_policies=False, show_data=False, save=True):
+                 sheet_num_to_write=0, show_policies=False, show_data=False, save=True,
+                 move_after_reading=True):
 
         self.list_files_to_read = self._get_list_files_to_read(folder_to_read)
         self.sheet_num_to_read = sheet_num_to_read
@@ -74,6 +76,7 @@ class Parser:
         self.male_names_file = self._validate_file_name(self.pattern_male_names_file,
                                                         self.pattern_folder_with_names)
 
+        self.move_after_reading = move_after_reading
         self.show_data = show_data
         self.show_policies = show_policies
         self.save = save
@@ -197,7 +200,22 @@ class Parser:
                 list_data.append(data_line)
                 line_to_read += 1
 
+            if self.move_after_reading:
+                self._move_after_reading(file_to_read)
+
         return list_data
+
+    def _move_after_reading(self, file_to_move):
+        source_path, file = os.path.split(file_to_move)
+        folder_to_move = os.path.join(source_path, self.folder_to_move)
+        path_to_move = os.path.join(folder_to_move, file)
+
+        try:
+            os.makedirs(folder_to_move)
+        except FileExistsError:
+            pass
+
+        os.rename(file_to_move, path_to_move)
 
     @staticmethod
     def _get_next_table(data_frame, last_line, line_to_read, column, table_start_value):
