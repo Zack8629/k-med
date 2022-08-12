@@ -216,7 +216,10 @@ class Parser:
         except FileExistsError:
             pass
 
-        os.rename(file_to_move, path_to_move)
+        try:
+            os.rename(file_to_move, path_to_move)
+        except FileExistsError:
+            pass
 
     @staticmethod
     def _get_next_table(data_frame, last_line, line_to_read, column, table_start_value):
