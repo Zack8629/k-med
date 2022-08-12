@@ -11,7 +11,7 @@ from pandas import read_excel
 class Parser:
     root_path = os.getcwd()
     pattern_ready_file = 'готовый файл.xlsm'
-    pattern_source_folder = 'списки от СК old'
+    pattern_source_folder = 'списки от СК'
     folder_to_move = 'прочитанные файлы'
 
     pattern_folder_with_names = 'списки имён'
@@ -108,7 +108,8 @@ class Parser:
 
                         for file_to_read in os.listdir(path_folder_to_read):
                             path_to_file = os.path.join(path_folder_to_read, file_to_read)
-                            list_files.append(path_to_file)
+                            if os.path.isfile(path_to_file):
+                                list_files.append(path_to_file)
                         break
 
         return list_files
