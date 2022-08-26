@@ -211,13 +211,17 @@ class Parser:
         folder_to_move = os.path.join(source_path, self.folder_to_move)
         path_to_move = os.path.join(folder_to_move, file)
 
-        try:
-            os.makedirs(folder_to_move)
-        except FileExistsError:
-            pass
+        self._create_folder(folder_to_move)
 
         try:
             os.rename(file_to_move, path_to_move)
+        except FileExistsError:
+            pass
+
+    @staticmethod
+    def _create_folder(path_folder):
+        try:
+            os.makedirs(path_folder)
         except FileExistsError:
             pass
 
@@ -563,10 +567,7 @@ class Parser:
             print(f'type_error! {type_error}')
 
     def copy_to_csv_format(self, source_file: str, path_to_save='./csv_files', sheet_num=0):
-        try:
-            os.makedirs(path_to_save)
-        except FileExistsError:
-            pass
+        self._create_folder(path_to_save)
 
         path_source_file = None
         for file in self.list_files_to_read:
@@ -642,6 +643,32 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=1,
            exclude_column=[11],
            sep_column=sep_column,
+           show_policies=show_policies,
+           show_data=show_data,
+           save=save).pars()
+
+
+def cogaz_f_i_o_pars(show_policies=False, show_data=False, save=False):
+    dict_to_write = {
+        'Фамилия': 0,
+        'Имя': 1,
+        'Отчество': 2,
+        'Дата рождения': 3,
+        'Пол': 4,
+        'Адрес проживания': 5,
+        'Телефон пациента': 6,
+        'Номер полиса': 9,
+        'Дата прикрепления': 10,
+        'Дата окончания': 11,
+        'Наименование программы': 12,
+        'Место работы': 13,
+    }
+
+    Parser(folder_to_read='согаз Ф_И_О',
+           dict_to_write=dict_to_write,
+           start_line_to_read=21,
+           start_column_to_read=1,
+           exclude_column=[15],
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
@@ -891,6 +918,7 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
 def parse_files(show_policies=False, show_data=False, save=False):
     ingosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
     cogaz_pars(show_policies=show_policies, show_data=show_data, save=save)
+    cogaz_f_i_o_pars(show_policies=show_policies, show_data=show_data, save=save)
     reso_pars(show_policies=show_policies, show_data=show_data, save=save)
     rosgosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
     alfa_pars(show_policies=show_policies, show_data=show_data, save=save)
