@@ -582,7 +582,7 @@ class Parser:
             print(f'File "{source_file}" not found!')
 
 
-def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
+def ingosstrakh_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     exclude_column = (8, 9, 13, 16, 17)
 
     dict_to_write = {
@@ -612,12 +612,13 @@ def ingosstrakh_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=1,
            exclude_column=exclude_column,
            extra_cell=extra_cell,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def cogaz_pars(show_policies=False, show_data=False, save=False):
+def cogaz_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Фамилия': 0,
         'Имя': 1,
@@ -643,12 +644,13 @@ def cogaz_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=1,
            exclude_column=[11],
            sep_column=sep_column,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def cogaz_f_i_o_pars(show_policies=False, show_data=False, save=False):
+def cogaz_f_i_o_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Фамилия': 0,
         'Имя': 1,
@@ -669,12 +671,13 @@ def cogaz_f_i_o_pars(show_policies=False, show_data=False, save=False):
            start_line_to_read=21,
            start_column_to_read=1,
            exclude_column=[15],
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def reso_pars(show_policies=False, show_data=False, save=False):
+def reso_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Фамилия': 0,
         'Имя': 1,
@@ -700,12 +703,13 @@ def reso_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=2,
            exclude_column=[12],
            sep_column=sep_column,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
+def rosgosstrakh_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Фамилия': 0,
         'Имя': 1,
@@ -736,12 +740,13 @@ def rosgosstrakh_pars(show_policies=False, show_data=False, save=False):
            sep_column=sep_column,
            step_line=3,
            extra_cell=extra_cell,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def alfa_pars(show_policies=False, show_data=False, save=False):
+def alfa_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Номер полиса': 0,
         'Фамилия': 1,
@@ -766,12 +771,13 @@ def alfa_pars(show_policies=False, show_data=False, save=False):
            start_column_to_read=1,
            sep_column=sep_column,
            step_line=9,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def renaissance_pars(show_policies=False, show_data=False, save=False):
+def renaissance_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Фамилия': 0,
         'Имя': 1,
@@ -804,12 +810,13 @@ def renaissance_pars(show_policies=False, show_data=False, save=False):
            exclude_column=[0, 3],
            sep_column=sep_column,
            extra_cell=extra_cell,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def consent_pars_13(show_policies=False, show_data=False, save=False):
+def consent_pars_13(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Номер полиса': 0,
         'Фамилия': 1,
@@ -837,12 +844,13 @@ def consent_pars_13(show_policies=False, show_data=False, save=False):
            exclude_column=[10],
            sep_column=sep_column,
            step_line=14,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def consent_pars_15(show_policies=False, show_data=False, save=False):
+def consent_pars_15(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Номер полиса': 0,
         'Фамилия': 1,
@@ -871,12 +879,13 @@ def consent_pars_15(show_policies=False, show_data=False, save=False):
            start_column_to_read=2,
            exclude_column=[10],
            extra_cell=extra_cell,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def alliance_pars(show_policies=False, show_data=False, save=False):
+def alliance_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
     dict_to_write = {
         'Номер полиса': 0,
         'Фамилия': 1,
@@ -910,30 +919,72 @@ def alliance_pars(show_policies=False, show_data=False, save=False):
            sep_column=sep_column,
            step_line=14,
            extra_cell=extra_cell,
+           move_after_reading=move_after_reading,
            show_policies=show_policies,
            show_data=show_data,
            save=save).pars()
 
 
-def parse_files(show_policies=False, show_data=False, save=False):
-    ingosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
-    cogaz_pars(show_policies=show_policies, show_data=show_data, save=save)
-    cogaz_f_i_o_pars(show_policies=show_policies, show_data=show_data, save=save)
-    reso_pars(show_policies=show_policies, show_data=show_data, save=save)
-    rosgosstrakh_pars(show_policies=show_policies, show_data=show_data, save=save)
-    alfa_pars(show_policies=show_policies, show_data=show_data, save=save)
-    renaissance_pars(show_policies=show_policies, show_data=show_data, save=save)
-    consent_pars_13(show_policies=show_policies, show_data=show_data, save=save)
-    consent_pars_15(show_policies=show_policies, show_data=show_data, save=save)
-    alliance_pars(show_policies=show_policies, show_data=show_data, save=save)
+def start_all_parse(move_after_reading=False, show_policies=False, show_data=False, save=False):
+    ingosstrakh_pars(move_after_reading=move_after_reading,
+                     show_policies=show_policies,
+                     show_data=show_data,
+                     save=save)
+
+    cogaz_pars(move_after_reading=move_after_reading,
+               show_policies=show_policies,
+               show_data=show_data,
+               save=save)
+
+    cogaz_f_i_o_pars(move_after_reading=move_after_reading,
+                     show_policies=show_policies,
+                     show_data=show_data,
+                     save=save)
+
+    reso_pars(move_after_reading=move_after_reading,
+              show_policies=show_policies,
+              show_data=show_data,
+              save=save)
+
+    rosgosstrakh_pars(move_after_reading=move_after_reading,
+                      show_policies=show_policies,
+                      show_data=show_data,
+                      save=save)
+
+    alfa_pars(move_after_reading=move_after_reading,
+              show_policies=show_policies,
+              show_data=show_data,
+              save=save)
+
+    renaissance_pars(move_after_reading=move_after_reading,
+                     show_policies=show_policies,
+                     show_data=show_data,
+                     save=save)
+
+    consent_pars_13(move_after_reading=move_after_reading,
+                    show_policies=show_policies,
+                    show_data=show_data,
+                    save=save)
+
+    consent_pars_15(move_after_reading=move_after_reading,
+                    show_policies=show_policies,
+                    show_data=show_data,
+                    save=save)
+
+    alliance_pars(move_after_reading=move_after_reading,
+                  show_policies=show_policies,
+                  show_data=show_data,
+                  save=save)
+
     print('Pars DONE!', end='\n\n')
 
 
-def main(num_runs=1, show_policies=False, show_data=False, save=True):
-    print(f'num_runs = {num_runs}', end='\n\n')
-    for i in range(num_runs):
-        parse_files(show_policies=show_policies, show_data=show_data, save=save)
+def main(move_after_reading=False, show_policies=False, show_data=False, save=False):
+    start_all_parse(move_after_reading=move_after_reading,
+                    show_policies=show_policies,
+                    show_data=show_data,
+                    save=save)
 
 
 if __name__ == '__main__':
-    main()
+    main(move_after_reading=True, show_policies=False, show_data=False, save=True)
