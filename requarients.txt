@@ -1,3 +1,5 @@
 xlrd
 pandas
 openpyxl
+pyqt6
+pyqt-tools

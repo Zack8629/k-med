@@ -1,11 +1,22 @@
 import os
 import re
+import sys
 from datetime import datetime
 from typing import Union
 
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtWidgets import QApplication, QWidget, QMainWindow, QPushButton, QVBoxLayout, QLabel
 from openpyxl import load_workbook
 from openpyxl.workbook import Workbook
 from pandas import read_excel
+
+
+def get_version():
+    return '0.13.10'
+
+
+def get_copyright_sign():
+    return '© Зарихин В. А., 2022'
 
 
 class Parser:
@@ -926,6 +937,10 @@ def alliance_pars(show_policies=False, show_data=False, save=False, move_after_r
 
 
 def start_all_parse(move_after_reading=False, show_policies=False, show_data=False, save=False):
+    print(f'Parser v{get_version()}')
+    print(f'Start parsing')
+    print()
+
     ingosstrakh_pars(move_after_reading=move_after_reading,
                      show_policies=show_policies,
                      show_data=show_data,
@@ -976,7 +991,50 @@ def start_all_parse(move_after_reading=False, show_policies=False, show_data=Fal
                   show_data=show_data,
                   save=save)
 
-    print('Pars DONE!', end='\n\n')
+    print()
+    print('Pars DONE!')
+    print(f'Developed by Zarikhin')
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle(f'Parser v{get_version()}')
+        self.setFixedSize(QSize(800, 400))
+
+        self.label = QLabel()
+
+        self.button = QPushButton('Start pars')
+        self.button.clicked.connect(self.the_button_was_clicked)
+        self.setCentralWidget(self.button)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+
+    def the_button_was_clicked(self):
+        self.button.setEnabled(False)
+        self.button.setText('Parsing...')
+
+        print(f'{self.button.setEnabled(False) = }')
+
+        self.pars()
+
+    @staticmethod
+    def pars():
+        start_all_parse(move_after_reading=False,
+                        show_policies=False,
+                        show_data=False,
+                        save=False)
+
+
+def start_window():
+    app = QApplication(sys.argv)
+
+    window = MainWindow()
+    window.show()
+
+    app.exec()
 
 
 def main(move_after_reading=False, show_policies=False, show_data=False, save=False):
@@ -988,3 +1046,5 @@ def main(move_after_reading=False, show_policies=False, show_data=False, save=Fa
 
 if __name__ == '__main__':
     main(move_after_reading=True, show_policies=False, show_data=False, save=True)
+
+# © Зарихин В. А., 2022
