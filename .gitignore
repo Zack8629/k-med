@@ -6,6 +6,9 @@
 /csv_files/
 /test_files/
 /working_files/
+/списки от СК new/
+/списки от СК old/
+/готовый файл.xlsm
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,macos,linux,python,django,pycharm,windows,powershell,vim,sublimetext,visualstudiocode,venv
 # Edit at https://www.toptal.com/developers/gitignore?templates=git,macos,linux,python,django,pycharm,windows,powershell,vim,sublimetext,visualstudiocode,venv
