@@ -20,8 +20,8 @@ def get_copyright_sign():
 
 class Parser:
     root_path = os.getcwd()
-    pattern_ready_file = 'готовый файл.xlsm'
-    pattern_source_folder = 'списки от СК old'
+    pattern_ready_file = '../готовый файл.xlsm'
+    pattern_source_folder = 'списки от СК'
     folder_to_move = 'прочитанные файлы'
 
     pattern_folder_with_names = 'списки имён'

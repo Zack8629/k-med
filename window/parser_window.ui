@@ -1,73 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Зарихин В. А.</author>
- <class>Parser</class>
- <widget class="QMainWindow" name="Parser">
+ <class>Parser_Window</class>
+ <widget class="QMainWindow" name="Parser_Window">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>327</width>
-    <height>163</height>
+    <width>300</width>
+    <height>300</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>300</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>800</width>
-    <height>400</height>
+    <width>300</width>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Парсер</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QFormLayout" name="formLayout">
-    <item row="1" column="0">
-     <widget class="QCheckBox" name="checkBox">
-      <property name="text">
-       <string>move_after_reading</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QCheckBox" name="checkBox_2">
-      <property name="text">
-       <string>show_policies</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QCheckBox" name="checkBox_3">
-      <property name="text">
-       <string>show_data</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
-     <widget class="QCheckBox" name="checkBox_4">
-      <property name="text">
-       <string>save</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="2">
-     <widget class="QPushButton" name="pushButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>Начать парсинг</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
+  <widget class="QWidget" name="widget">
+   <property name="minimumSize">
+    <size>
+     <width>286</width>
+     <height>211</height>
+    </size>
+   </property>
+   <widget class="QCheckBox" name="move_after_reading">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Переместить после прочтения</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="show_policies">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Показать дублированные полюса</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="show_data">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string notr="true">Покзать считанные данные</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="save">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Сохранить полученные данные</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progress_bar">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>271</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="acceptDrops">
+     <bool>false</bool>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>true</bool>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pars_button">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>271</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="tabletTracking">
+     <bool>false</bool>
+    </property>
+    <property name="contextMenuPolicy">
+     <enum>Qt::DefaultContextMenu</enum>
+    </property>
+    <property name="text">
+     <string>Начать парсинг</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>327</width>
+     <width>300</width>
      <height>22</height>
     </rect>
    </property>
@@ -75,18 +155,24 @@
     <property name="title">
      <string>Меню</string>
     </property>
-    <addaction name="action_2"/>
-    <addaction name="action"/>
+    <addaction name="exit"/>
+   </widget>
+   <widget class="QMenu" name="help">
+    <property name="title">
+     <string>Справка</string>
+    </property>
+    <addaction name="about"/>
    </widget>
    <addaction name="menu"/>
+   <addaction name="help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action">
+  <action name="exit">
    <property name="text">
     <string>Выход</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="about">
    <property name="text">
     <string>О программе</string>
    </property>

@@ -1,6 +1,6 @@
 # © Зарихин В. А., 2022
 
-from parser import Parser, get_version
+from .parser import Parser, get_version
 
 
 def ingosstrakh_pars(show_policies=False, show_data=False, save=False, move_after_reading=False):
@@ -351,51 +351,61 @@ def start_all_parse(move_after_reading=False, show_policies=False, show_data=Fal
     print(f'Start parsing')
     print()
 
+    print('ingosstrakh_pars')
     ingosstrakh_pars(move_after_reading=move_after_reading,
                      show_policies=show_policies,
                      show_data=show_data,
                      save=save)
 
+    print('cogaz_pars')
     cogaz_pars(move_after_reading=move_after_reading,
                show_policies=show_policies,
                show_data=show_data,
                save=save)
 
+    print('cogaz_f_i_o_pars')
     cogaz_f_i_o_pars(move_after_reading=move_after_reading,
                      show_policies=show_policies,
                      show_data=show_data,
                      save=save)
 
+    print('reso_pars')
     reso_pars(move_after_reading=move_after_reading,
               show_policies=show_policies,
               show_data=show_data,
               save=save)
 
+    print('rosgosstrakh_pars')
     rosgosstrakh_pars(move_after_reading=move_after_reading,
                       show_policies=show_policies,
                       show_data=show_data,
                       save=save)
 
+    print('alfa_pars')
     alfa_pars(move_after_reading=move_after_reading,
               show_policies=show_policies,
               show_data=show_data,
               save=save)
 
+    print('renaissance_pars')
     renaissance_pars(move_after_reading=move_after_reading,
                      show_policies=show_policies,
                      show_data=show_data,
                      save=save)
 
+    print('consent_pars_13')
     consent_pars_13(move_after_reading=move_after_reading,
                     show_policies=show_policies,
                     show_data=show_data,
                     save=save)
 
+    print('consent_pars_15')
     consent_pars_15(move_after_reading=move_after_reading,
                     show_policies=show_policies,
                     show_data=show_data,
                     save=save)
 
+    print('alliance_pars')
     alliance_pars(move_after_reading=move_after_reading,
                   show_policies=show_policies,
                   show_data=show_data,
