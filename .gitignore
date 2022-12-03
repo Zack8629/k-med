@@ -1,5 +1,6 @@
 # My ignore
 /__helps/
+/tmp/
 /privacy/
 /licenses/
 /static/
@@ -9,7 +10,7 @@
 /working_files/
 /списки от СК/
 /списки от СК new/
-/списки от СК/
+/списки от СК old/
 /готовый файл.xlsm
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,macos,linux,python,django,pycharm,windows,powershell,vim,sublimetext,visualstudiocode,venv

@@ -4,10 +4,12 @@ import sys
 import time
 
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QMainWindow
 
-from parser.run_pars import start_all_parse
-from parser.validate import check_license_expiration_date, check_show_and_start
+from parser import (start_all_parse,
+                    check_license_expiration_date,
+                    check_show_and_start,
+                    get_version)
 
 
 class ParserWindow(QMainWindow):
@@ -26,6 +28,7 @@ class ParserWindow(QMainWindow):
         # self.progress_bar.hide()
 
         self.pars_button.clicked.connect(self.the_button_was_clicked)
+        self.setWindowTitle(f'Парсер v{get_version()}')
 
     def the_button_was_clicked(self):
         self.pars_button.setEnabled(False)
@@ -48,27 +51,26 @@ class ParserWindow(QMainWindow):
                         save=self.save.isChecked())
 
 
-def start_window(license_term=''):
-    sys_argv = sys.argv
-
+def start_window(App, Window, license_term=''):
     if not license_term:
         try:
-            license_term = sys_argv[1]
+            license_term = sys.argv[1]
 
         except IndexError:
-            pass
+            license_term = ''
 
-    app = QApplication(sys_argv)
+    App = App
 
-    window = ParserWindow()
-    window.show()
+    Window = Window
+    Window.show()
 
     if not check_license_expiration_date(license_term):
-        window.pars_button.setEnabled(False)
-        window.pars_button.setText('License is expired!')
-        window.repaint()
+        Window.pars_button.setEnabled(False)
+        Window.pars_button.setText('License is expired!')
+        Window.repaint()
 
-    if check_show_and_start(sys_argv[-1]):
-        window.pars()
+    if check_show_and_start(sys.argv[-1]):
+        Window.the_button_was_clicked()
+        sys.exit()
 
-    app.exec()
+    App.exec()

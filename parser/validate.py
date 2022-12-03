@@ -1,7 +1,7 @@
 # © Зарихин В. А., 2022
 
-from hashlib import pbkdf2_hmac
 from datetime import datetime
+from hashlib import pbkdf2_hmac
 
 
 def check_license_expiration_date(license_term: str):
