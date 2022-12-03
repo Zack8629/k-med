@@ -1,6 +1,6 @@
 # © Зарихин В. А., 2022
 
-from parser_window import start_window
+from window import App, Window, start_window
 
 if __name__ == '__main__':
-    start_window()
+    start_window(App, Window)

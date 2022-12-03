@@ -1,6 +1,8 @@
 # My ignore
 /__helps/
+/tmp/
 /privacy/
+/licenses/
 /static/
 /media/
 /csv_files/
