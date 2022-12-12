@@ -13,7 +13,7 @@ from parser import list_female_names, list_male_names
 
 
 def get_version():
-    return '1.1.0.42'
+    return '1.1.2.43'
 
 
 def get_copyright_sign():
@@ -22,7 +22,7 @@ def get_copyright_sign():
 
 class Parser:
     root_path = os.getcwd()
-    pattern_ready_file = '../готовый файл.xlsm'
+    pattern_ready_file = 'готовый файл.xlsm'
     pattern_source_folder = 'списки от СК'
     folder_to_move = 'прочитанные файлы'
 

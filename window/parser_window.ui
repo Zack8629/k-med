@@ -45,6 +45,9 @@
     <property name="text">
      <string>Переместить после прочтения</string>
     </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
    </widget>
    <widget class="QCheckBox" name="show_policies">
     <property name="enabled">
@@ -89,6 +92,9 @@
     </property>
     <property name="text">
      <string>Сохранить полученные данные</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QProgressBar" name="progress_bar">
