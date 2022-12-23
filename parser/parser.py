@@ -13,7 +13,7 @@ from parser import list_female_names, list_male_names
 
 
 def get_version():
-    return '1.1.2.43'
+    return '1.2.0.44'
 
 
 def get_copyright_sign():

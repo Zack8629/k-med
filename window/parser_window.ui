@@ -37,7 +37,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>70</y>
+      <y>55</y>
       <width>271</width>
       <height>23</height>
      </rect>
@@ -56,7 +56,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>5</y>
       <width>271</width>
       <height>23</height>
      </rect>
@@ -72,7 +72,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>30</y>
       <width>271</width>
       <height>23</height>
      </rect>
@@ -85,7 +85,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>100</y>
+      <y>80</y>
       <width>271</width>
       <height>23</height>
      </rect>
@@ -101,7 +101,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
+      <y>135</y>
       <width>271</width>
       <height>41</height>
      </rect>
@@ -144,6 +144,25 @@
      <string>Начать парсинг</string>
     </property>
    </widget>
+   <widget class="QCheckBox" name="close_after_done">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>105</y>
+      <width>271</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string notr="true">Закрыть после выполнения</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="enabled">
@@ -161,6 +180,7 @@
     <property name="title">
      <string>Меню</string>
     </property>
+    <addaction name="settings"/>
     <addaction name="exit"/>
    </widget>
    <widget class="QMenu" name="help">
@@ -181,6 +201,14 @@
   <action name="about">
    <property name="text">
     <string>О программе</string>
+   </property>
+  </action>
+  <action name="settings">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Настройки</string>
    </property>
   </action>
  </widget>

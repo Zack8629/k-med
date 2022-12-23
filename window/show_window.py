@@ -3,35 +3,41 @@
 import sys
 import time
 
-from PyQt6 import uic
 from PyQt6.QtWidgets import QMainWindow, QDialog
 
 from parser import (start_all_parse,
                     check_license_expiration_date,
                     check_show_and_start,
                     get_version, get_copyright_sign)
+from window import Ui_Parser_Window, Ui_about_window, Ui_easter_window, Ui_settings_window
 
 
-class ParserWindow(QMainWindow):
-    exit = None
-    about = None
+class ParserWindow(QMainWindow, Ui_Parser_Window):
+    click_counter = 0
 
-    pars_button = None
-    progress_bar = None
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
+        self.setupUi(self)
+        self.setWindowTitle(f'Парсер v{get_version()}')
 
-    move_after_reading = None
-    show_policies = None
-    show_data = None
-    save = None
-
-    def __init__(self):
-        QMainWindow.__init__(self)
-        uic.loadUi('window/parser_window.ui', self)
+        # self.settings.setEnabled(True)
 
         self.pars_button.clicked.connect(self.the_button_was_clicked)
+
+        self.settings.triggered.connect(self.show_settings)
         self.exit.triggered.connect(self.close)
+
         self.about.triggered.connect(self.show_about_window)
-        self.setWindowTitle(f'Парсер v{get_version()}')
+
+    def show_settings(self):
+        Settings = SettingsWindow(self)
+        Settings.show()
+        Settings.exec()
+
+    def show_easter_window(self):
+        Easter = EasterWindow(self)
+        Easter.show()
+        Easter.exec()
 
     def show_about_window(self):
         About = AboutWindow(self)
@@ -39,6 +45,12 @@ class ParserWindow(QMainWindow):
         About.exec()
 
     def the_button_was_clicked(self):
+        self.move_after_reading.setEnabled(False)
+        self.show_policies.setEnabled(False)
+        self.show_data.setEnabled(False)
+        self.save.setEnabled(False)
+        self.close_after_done.setEnabled(False)
+
         self.pars_button.setEnabled(False)
         self.pars_button.setText('Парсинг...')
         self.repaint()
@@ -49,7 +61,7 @@ class ParserWindow(QMainWindow):
         self.pars_button.setText('Готово!')
         self.repaint()
 
-        time.sleep(1.5)
+        time.sleep(2)
         self.close()
 
     def pars(self):
@@ -59,20 +71,28 @@ class ParserWindow(QMainWindow):
                         save=self.save.isChecked())
 
 
-class AboutWindow(QDialog):
-    text_varsion = None
-    text_dev = None
-    ok_btn = None
-
+class AboutWindow(QDialog, Ui_about_window):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
-        uic.loadUi('window/about_window.ui', self)
+        self.setupUi(self)
 
         self.setWindowTitle(f'О парсере v{get_version()}')
         self.text_varsion.setText(f'Парсер v{get_version()}')
         self.text_dev.setText(f'Разработал {get_copyright_sign()}')
 
         self.ok_btn.clicked.connect(self.close)
+
+
+class EasterWindow(QDialog, Ui_easter_window):
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+
+class SettingsWindow(QDialog, Ui_settings_window):
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.setupUi(self)
 
 
 def start_window(App, Window, license_term=''):
