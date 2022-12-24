@@ -118,7 +118,7 @@ class SettingsWindow(QDialog, Ui_settings_window):
         self.ok_btn.clicked.connect(self.close)
 
 
-def start_window(App, Window, license_term=''):
+def start_window(App, Window, dt_start, license_term=''):
     if not license_term:
         try:
             license_term = sys.argv[1]
@@ -131,7 +131,7 @@ def start_window(App, Window, license_term=''):
     Window = Window
     Window.show()
 
-    if not check_license_expiration_date(license_term):
+    if not check_license_expiration_date(dt_start, license_term):
         Window.pars_button.setEnabled(False)
         Window.pars_button.setText('Срок действия лицензии истек!')
         Window.repaint()

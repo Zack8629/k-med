@@ -4,7 +4,7 @@ from datetime import datetime
 from hashlib import pbkdf2_hmac
 
 
-def check_license_expiration_date(license_term: str):
+def check_license_expiration_date(dt_start, license_term):
     ok = b'\xdb\x1a\x08)\xe6X!\x8b\x15\xf7\xb4\r\xb3s_\x12/\xbd\xb1K.\x1c@t\xfb\xed\xee:\x1cs\x0eW'
     b_license_term = pbkdf2_hmac('sha256', license_term.encode(), 'Zack'.encode(), 100000)
 
@@ -13,7 +13,7 @@ def check_license_expiration_date(license_term: str):
 
     try:
         dt_stop = datetime.strptime(license_term, "%Y-%m-%d")
-        dt_start = datetime.strptime('2022-11-30', "%Y-%m-%d")
+        dt_start = datetime.strptime(dt_start, "%Y-%m-%d")
         dt_now = datetime.now()
 
     except ValueError:

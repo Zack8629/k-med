@@ -3,4 +3,4 @@
 from window import App, Window, start_window
 
 if __name__ == '__main__':
-    start_window(App, Window)
+    start_window(App, Window, '2022-12-24')
