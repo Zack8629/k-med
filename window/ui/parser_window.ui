@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Зарихин В. А.</author>
- <class>Parser_Window</class>
- <widget class="QMainWindow" name="Parser_Window">
+ <class>parser_window</class>
+ <widget class="QMainWindow" name="parser_window">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -187,6 +187,7 @@
     <property name="title">
      <string>Справка</string>
     </property>
+    <addaction name="manual"/>
     <addaction name="about"/>
    </widget>
    <addaction name="menu"/>
@@ -209,6 +210,11 @@
    </property>
    <property name="text">
     <string>Настройки</string>
+   </property>
+  </action>
+  <action name="manual">
+   <property name="text">
+    <string>Инструкция</string>
    </property>
   </action>
  </widget>

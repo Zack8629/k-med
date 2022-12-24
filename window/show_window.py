@@ -9,10 +9,14 @@ from parser import (start_all_parse,
                     check_license_expiration_date,
                     check_show_and_start,
                     get_version, get_copyright_sign)
-from window import Ui_Parser_Window, Ui_about_window, Ui_easter_window, Ui_settings_window
+from window import (Ui_parser_window,
+                    Ui_about_window,
+                    Ui_easter_window,
+                    Ui_settings_window,
+                    Ui_manual_window)
 
 
-class ParserWindow(QMainWindow, Ui_Parser_Window):
+class ParserWindow(QMainWindow, Ui_parser_window):
     click_counter = 0
 
     def __init__(self, parent=None):
@@ -20,14 +24,16 @@ class ParserWindow(QMainWindow, Ui_Parser_Window):
         self.setupUi(self)
         self.setWindowTitle(f'Парсер v{get_version()}')
 
-        # self.settings.setEnabled(True)
-
         self.pars_button.clicked.connect(self.the_button_was_clicked)
 
+        # menubar -> menu
+        # self.settings.setEnabled(True)
         self.settings.triggered.connect(self.show_settings)
         self.exit.triggered.connect(self.close)
 
+        # menubar -> help
         self.about.triggered.connect(self.show_about_window)
+        self.manual.triggered.connect(self.show_manual_window)
 
     def show_settings(self):
         Settings = SettingsWindow(self)
@@ -43,6 +49,11 @@ class ParserWindow(QMainWindow, Ui_Parser_Window):
         About = AboutWindow(self)
         About.show()
         About.exec()
+
+    def show_manual_window(self):
+        Manual = ManualWindow(self)
+        Manual.show()
+        Manual.exec()
 
     def the_button_was_clicked(self):
         self.move_after_reading.setEnabled(False)
@@ -88,11 +99,23 @@ class EasterWindow(QDialog, Ui_easter_window):
         QDialog.__init__(self, parent)
         self.setupUi(self)
 
+        self.ok_btn.clicked.connect(self.close)
+
+
+class ManualWindow(QDialog, Ui_manual_window):
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
+        self.setupUi(self)
+
+        self.ok_btn.clicked.connect(self.close)
+
 
 class SettingsWindow(QDialog, Ui_settings_window):
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
         self.setupUi(self)
+
+        self.ok_btn.clicked.connect(self.close)
 
 
 def start_window(App, Window, license_term=''):

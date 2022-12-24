@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'parser_window.ui'
+# Form implementation generated from reading ui file 'ui/parser_window.ui'
 #
 # Created by: PyQt6 UI code generator 6.3.1
 #
@@ -9,13 +9,13 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Parser_Window(object):
-    def setupUi(self, Parser_Window):
-        Parser_Window.setObjectName("Parser_Window")
-        Parser_Window.resize(300, 300)
-        Parser_Window.setMinimumSize(QtCore.QSize(300, 300))
-        Parser_Window.setMaximumSize(QtCore.QSize(300, 300))
-        self.widget = QtWidgets.QWidget(Parser_Window)
+class Ui_parser_window(object):
+    def setupUi(self, parser_window):
+        parser_window.setObjectName("parser_window")
+        parser_window.resize(300, 300)
+        parser_window.setMinimumSize(QtCore.QSize(300, 300))
+        parser_window.setMaximumSize(QtCore.QSize(300, 300))
+        self.widget = QtWidgets.QWidget(parser_window)
         self.widget.setMinimumSize(QtCore.QSize(286, 211))
         self.widget.setObjectName("widget")
         self.move_after_reading = QtWidgets.QCheckBox(self.widget)
@@ -55,8 +55,8 @@ class Ui_Parser_Window(object):
         self.close_after_done.setText("Закрыть после выполнения")
         self.close_after_done.setChecked(True)
         self.close_after_done.setObjectName("close_after_done")
-        Parser_Window.setCentralWidget(self.widget)
-        self.menubar = QtWidgets.QMenuBar(Parser_Window)
+        parser_window.setCentralWidget(self.widget)
+        self.menubar = QtWidgets.QMenuBar(parser_window)
         self.menubar.setEnabled(True)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 300, 22))
         self.menubar.setObjectName("menubar")
@@ -64,35 +64,39 @@ class Ui_Parser_Window(object):
         self.menu.setObjectName("menu")
         self.help = QtWidgets.QMenu(self.menubar)
         self.help.setObjectName("help")
-        Parser_Window.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(Parser_Window)
+        parser_window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(parser_window)
         self.statusbar.setObjectName("statusbar")
-        Parser_Window.setStatusBar(self.statusbar)
-        self.exit = QtGui.QAction(Parser_Window)
+        parser_window.setStatusBar(self.statusbar)
+        self.exit = QtGui.QAction(parser_window)
         self.exit.setObjectName("exit")
-        self.about = QtGui.QAction(Parser_Window)
+        self.about = QtGui.QAction(parser_window)
         self.about.setObjectName("about")
-        self.settings = QtGui.QAction(Parser_Window)
+        self.settings = QtGui.QAction(parser_window)
         self.settings.setEnabled(False)
         self.settings.setObjectName("settings")
+        self.manual = QtGui.QAction(parser_window)
+        self.manual.setObjectName("manual")
         self.menu.addAction(self.settings)
         self.menu.addAction(self.exit)
+        self.help.addAction(self.manual)
         self.help.addAction(self.about)
         self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.help.menuAction())
 
-        self.retranslateUi(Parser_Window)
-        QtCore.QMetaObject.connectSlotsByName(Parser_Window)
+        self.retranslateUi(parser_window)
+        QtCore.QMetaObject.connectSlotsByName(parser_window)
 
-    def retranslateUi(self, Parser_Window):
+    def retranslateUi(self, parser_window):
         _translate = QtCore.QCoreApplication.translate
-        Parser_Window.setWindowTitle(_translate("Parser_Window", "Парсер"))
-        self.move_after_reading.setText(_translate("Parser_Window", "Переместить после прочтения"))
-        self.show_policies.setText(_translate("Parser_Window", "Показать дублированные полюса"))
-        self.save.setText(_translate("Parser_Window", "Сохранить полученные данные"))
-        self.pars_button.setText(_translate("Parser_Window", "Начать парсинг"))
-        self.menu.setTitle(_translate("Parser_Window", "Меню"))
-        self.help.setTitle(_translate("Parser_Window", "Справка"))
-        self.exit.setText(_translate("Parser_Window", "Выход"))
-        self.about.setText(_translate("Parser_Window", "О программе"))
-        self.settings.setText(_translate("Parser_Window", "Настройки"))
+        parser_window.setWindowTitle(_translate("parser_window", "Парсер"))
+        self.move_after_reading.setText(_translate("parser_window", "Переместить после прочтения"))
+        self.show_policies.setText(_translate("parser_window", "Показать дублированные полюса"))
+        self.save.setText(_translate("parser_window", "Сохранить полученные данные"))
+        self.pars_button.setText(_translate("parser_window", "Начать парсинг"))
+        self.menu.setTitle(_translate("parser_window", "Меню"))
+        self.help.setTitle(_translate("parser_window", "Справка"))
+        self.exit.setText(_translate("parser_window", "Выход"))
+        self.about.setText(_translate("parser_window", "О программе"))
+        self.settings.setText(_translate("parser_window", "Настройки"))
+        self.manual.setText(_translate("parser_window", "Инструкция"))
