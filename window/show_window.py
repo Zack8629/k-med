@@ -9,11 +9,11 @@ from parser import (start_all_parse,
                     check_license_expiration_date,
                     check_show_and_start,
                     get_version, get_copyright_sign)
-from window import (Ui_parser_window,
-                    Ui_about_window,
-                    Ui_easter_window,
-                    Ui_settings_window,
-                    Ui_manual_window)
+from window.py import (Ui_parser_window,
+                       Ui_about_window,
+                       Ui_easter_window,
+                       Ui_settings_window,
+                       Ui_manual_window)
 
 
 class ParserWindow(QMainWindow, Ui_parser_window):
@@ -72,8 +72,9 @@ class ParserWindow(QMainWindow, Ui_parser_window):
         self.pars_button.setText('Готово!')
         self.repaint()
 
-        time.sleep(2)
-        self.close()
+        if self.close_after_done.isChecked():
+            time.sleep(2)
+            self.close()
 
     def pars(self):
         start_all_parse(move_after_reading=self.move_after_reading.isChecked(),

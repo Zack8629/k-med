@@ -50,7 +50,6 @@ class Ui_parser_window(object):
         self.pars_button.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.DefaultContextMenu)
         self.pars_button.setObjectName("pars_button")
         self.close_after_done = QtWidgets.QCheckBox(self.widget)
-        self.close_after_done.setEnabled(False)
         self.close_after_done.setGeometry(QtCore.QRect(10, 105, 271, 23))
         self.close_after_done.setText("Закрыть после выполнения")
         self.close_after_done.setChecked(True)

@@ -8,9 +8,12 @@ def start_convert():
                'settings_window',
                'manual_window']
 
-    for file in list_ui:
-        subprocess.run(['pyuic6', '-o', f'{file}.py', f'ui/{file}.ui'])
-        print(f'{file} done!')
+    try:
+        for file in list_ui:
+            subprocess.run(['pyuic6', '-o', f'py/{file}.py', f'ui/{file}.ui'])
+            print(f'{file} done!')
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':
