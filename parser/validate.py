@@ -12,8 +12,8 @@ def check_license_expiration_date(dt_start, license_term):
         return True
 
     try:
-        dt_stop = datetime.strptime(license_term, "%Y-%m-%d")
-        dt_start = datetime.strptime(dt_start, "%Y-%m-%d")
+        dt_stop = datetime.strptime(license_term, '%Y-%m-%d')
+        dt_start = datetime.strptime(dt_start, '%Y-%m-%d')
         dt_now = datetime.now()
 
     except ValueError:

@@ -286,7 +286,7 @@ def start_all_parse(show_policies=False, show_data=False, save=False, move_after
                    save=save).pars()
 
             progress += step_progress
-            Window.progress_bar.setProperty("value", progress)
+            Window.progress_bar.setProperty('value', progress)
             print(f'{progress = }%')
 
         print()

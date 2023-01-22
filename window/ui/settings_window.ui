@@ -31,8 +31,8 @@
   <widget class="QPushButton" name="apply_btn">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>130</y>
+     <x>50</x>
+     <y>300</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -57,8 +57,8 @@
   <widget class="QPushButton" name="cancel_btn">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>130</y>
+     <x>190</x>
+     <y>300</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -70,14 +70,17 @@
   <widget class="QDoubleSpinBox" name="time_close_dbox">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>70</y>
-     <width>51</width>
-     <height>26</height>
+     <x>240</x>
+     <y>190</y>
+     <width>41</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="decimals">
     <number>1</number>
+   </property>
+   <property name="minimum">
+    <double>1.000000000000000</double>
    </property>
    <property name="maximum">
     <double>10.000000000000000</double>
@@ -85,21 +88,54 @@
    <property name="singleStep">
     <double>0.100000000000000</double>
    </property>
-   <property name="stepType">
-    <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
-   </property>
   </widget>
   <widget class="QLabel" name="time_close_text">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>70</y>
-     <width>151</width>
+     <x>10</x>
+     <y>190</y>
+     <width>231</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Закрыть окно через</string>
+    <string>Закрыть окно после выполнения через, сек</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="language_combo_box">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>70</y>
+     <width>69</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Rus</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Eng</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="set_language_text">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>70</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Язык программы:</string>
    </property>
   </widget>
  </widget>

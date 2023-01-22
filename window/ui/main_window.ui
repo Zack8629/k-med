@@ -45,9 +45,6 @@
     <property name="text">
      <string>Переместить после прочтения</string>
     </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
    </widget>
    <widget class="QCheckBox" name="show_policies">
     <property name="enabled">
@@ -170,7 +167,7 @@
      <x>0</x>
      <y>0</y>
      <width>300</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

@@ -5,6 +5,7 @@ import time
 
 from PyQt6.QtWidgets import QMainWindow
 
+from configs import app_config_json
 from parser import get_version, start_all_parse
 from window.logic.about_window import AboutWindow
 from window.logic.easter_window import EasterWindow
@@ -14,7 +15,6 @@ from window.py.main_window import Ui_main_window
 
 
 class ParserWindow(QMainWindow, Ui_main_window):
-    file_window_conf = 'window/logic/window_config.set'
     click_counter = 0
 
     def __init__(self, parent=None):
@@ -66,15 +66,12 @@ class ParserWindow(QMainWindow, Ui_main_window):
 
         self.pars()
 
-        self.progress_bar.setProperty("value", 100)
+        self.progress_bar.setProperty('value', 100)
         self.pars_button.setText('Готово!')
         self.repaint()
 
         if self.close_after_done.isChecked():
-            json_config = self.get_json_config()
-            time_close = float(json_config["window"]["time_close"])
-
-            time.sleep(time_close)
+            time.sleep(app_config_json['time_close'])
             self.close()
 
     def pars(self):
@@ -83,6 +80,3 @@ class ParserWindow(QMainWindow, Ui_main_window):
                         show_data=self.show_data.isChecked(),
                         save=self.save.isChecked())
 
-    def get_json_config(self):
-        with open(self.file_window_conf, 'r') as conf_file:
-            return json.loads(conf_file.read())
