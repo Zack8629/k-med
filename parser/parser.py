@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 import os
 import re
 from datetime import datetime
@@ -13,7 +11,7 @@ from parser import list_female_names, list_male_names
 
 
 def get_version():
-    return '1.2.4.49'
+    return '1.3.0.50'
 
 
 def get_copyright_sign():

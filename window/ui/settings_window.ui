@@ -9,20 +9,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>333</width>
-    <height>333</height>
+    <width>315</width>
+    <height>123</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>333</width>
-    <height>333</height>
+    <width>315</width>
+    <height>123</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>333</width>
-    <height>333</height>
+    <width>315</width>
+    <height>123</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -31,8 +31,8 @@
   <widget class="QPushButton" name="apply_btn">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>300</y>
+     <x>60</x>
+     <y>90</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -41,24 +41,11 @@
     <string>Применить</string>
    </property>
   </widget>
-  <widget class="QLabel" name="settings_text">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>20</y>
-     <width>111</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Окно настроек</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="cancel_btn">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>300</y>
+     <x>170</x>
+     <y>90</y>
      <width>89</width>
      <height>25</height>
     </rect>
@@ -70,8 +57,8 @@
   <widget class="QDoubleSpinBox" name="time_close_dbox">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>190</y>
+     <x>260</x>
+     <y>50</y>
      <width>41</width>
      <height>21</height>
     </rect>
@@ -93,8 +80,8 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>190</y>
-     <width>231</width>
+     <y>50</y>
+     <width>251</width>
      <height>21</height>
     </rect>
    </property>
@@ -108,34 +95,34 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>70</y>
+     <x>180</x>
+     <y>20</y>
      <width>69</width>
-     <height>16</height>
+     <height>21</height>
     </rect>
    </property>
    <item>
     <property name="text">
-     <string>Rus</string>
+     <string>Русский</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Eng</string>
+     <string>English</string>
     </property>
    </item>
   </widget>
   <widget class="QLabel" name="set_language_text">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>70</y>
+     <x>70</x>
+     <y>20</y>
      <width>101</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>Язык программы:</string>
+    <string>Язык программы</string>
    </property>
   </widget>
  </widget>

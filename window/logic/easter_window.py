@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 from PyQt6.QtWidgets import QDialog
 
 from window.py import Ui_easter_window

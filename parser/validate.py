@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 from datetime import datetime
 from hashlib import pbkdf2_hmac
 

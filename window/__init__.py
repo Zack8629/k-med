@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 import sys
 
 from PyQt6.QtWidgets import QApplication

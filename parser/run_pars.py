@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 from parser import Parser, get_version
 
 parser_settings = {

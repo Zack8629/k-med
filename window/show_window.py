@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 import sys
 
 from parser import check_license_expiration_date, check_show_and_start

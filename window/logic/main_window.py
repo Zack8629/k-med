@@ -1,11 +1,8 @@
-# © Зарихин В. А., 2022
-
-import json
 import time
 
 from PyQt6.QtWidgets import QMainWindow
 
-from configs import app_config_json
+from settings import app_settings_json
 from parser import get_version, start_all_parse
 from window.logic.about_window import AboutWindow
 from window.logic.easter_window import EasterWindow
@@ -23,6 +20,9 @@ class ParserWindow(QMainWindow, Ui_main_window):
         self.setWindowTitle(f'Парсер v{get_version()}')
 
         self.pars_button.clicked.connect(self.the_button_was_clicked)
+
+        # self.show_data.setEnabled(True)
+        # self.show_data.addActions([self.close])
 
         # menubar -> menu
         self.settings.setEnabled(True)
@@ -54,6 +54,9 @@ class ParserWindow(QMainWindow, Ui_main_window):
         Manual.exec()
 
     def the_button_was_clicked(self):
+        time_start = time.time()
+        print(f'{time_start = }')
+
         self.move_after_reading.setEnabled(False)
         self.show_policies.setEnabled(False)
         self.show_data.setEnabled(False)
@@ -70,8 +73,13 @@ class ParserWindow(QMainWindow, Ui_main_window):
         self.pars_button.setText('Готово!')
         self.repaint()
 
+        time_stop = time.time()
+        print(f'{time_stop = }')
+        result = time_stop - time_start
+        print(f'{result = }')
+
         if self.close_after_done.isChecked():
-            time.sleep(app_config_json['time_close'])
+            time.sleep(app_settings_json['closing_time'])
             self.close()
 
     def pars(self):
@@ -79,4 +87,3 @@ class ParserWindow(QMainWindow, Ui_main_window):
                         show_policies=self.show_policies.isChecked(),
                         show_data=self.show_data.isChecked(),
                         save=self.save.isChecked())
-

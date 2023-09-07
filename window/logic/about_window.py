@@ -1,5 +1,3 @@
-# © Зарихин В. А., 2022
-
 from PyQt6.QtWidgets import QDialog
 
 from parser import get_version, get_copyright_sign
