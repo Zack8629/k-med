@@ -16,39 +16,36 @@ def resource_path(relative_path):
 
 def read_db(path, table):
     # Создание подключения к базе данных
-    connect = sqlite3.connect(resource_path(path))
+    connect = sqlite3.connect(path)
 
     # Создание курсора
     cursor = connect.cursor()
 
-    # Вставка данных в таблицу
-    # cursor.execute("INSERT INTO mytable (name, age) VALUES (?, ?)", ('John', 25))
-
     # Выполнение запроса на выборку данных
-    cursor.execute(f'SELECT * FROM {table}')
+    cursor.execute(f'SELECT * FROM "{table}"')
 
     # Получение всех результатов
     results = cursor.fetchall()
 
     # Вывод результатов
-    for row_data in results:
-        print(row_data)
+    # for row_data in results:
+    #     print(row_data)
 
     # Закрытие соединения
     connect.close()
 
-    return results[0][1]
+    return results
 
 
 def write_db(path, table, column, val):
     # Создание подключения к базе данных
-    conn = sqlite3.connect(resource_path(path))
+    conn = sqlite3.connect(path)
 
     # Создание курсора
     cursor = conn.cursor()
 
     # Вставка данных в таблицу
-    cursor.execute(f'UPDATE {table} SET {column} = ({val})')
+    cursor.execute(f'UPDATE "{table}" SET "{column}" = "{val}"')
 
     # Сохранение изменений
     conn.commit()
@@ -58,10 +55,15 @@ def write_db(path, table, column, val):
 
 
 if __name__ == '__main__':
-    rr = read_db('default_settings.db', 'default_settings')
-    print(f'{rr = }')
+    # rr = read_db('default_settings.db', 'default_settings')
+    # rr = read_db('license.file', 'License_information')
+    # print(f'{rr = }')
 
-    # write_db('db.sqlite', 'current_settings', 'closing_time', 5)
+    # val = 'Test'
+    # write_db('license.file', 'License_information', 'Last_run_date', val=val)
 
-    rr = read_db('default_settings.db', 'default_settings')
-    print(f'{rr = }')
+    # rr = read_db('default_settings.db', 'default_settings')
+    # rr = read_db('license.file', 'License_information')
+    # print(f'{rr = }')
+
+    pass

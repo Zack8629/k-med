@@ -11,7 +11,7 @@ from parser import list_female_names, list_male_names
 
 
 def get_version():
-    return '1.3.0.50'
+    return '1.3.1.51'
 
 
 def get_copyright_sign():
