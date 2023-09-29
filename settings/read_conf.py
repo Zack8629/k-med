@@ -31,7 +31,7 @@ def get_settings_as_json(settings_file: str):
         return {}
 
     except Exception as exception:
-        print(f'read_conf => {exception = }')
+        print(f'get_settings_as_json => {exception = }')
 
         return {}
 

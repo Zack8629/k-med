@@ -8,7 +8,7 @@ from window.py import Ui_settings_window
 
 class SettingsWindow(QDialog, Ui_settings_window):
     default_closing_time = 3.2
-    default_language = "Русский"
+    default_language = 'Русский'
 
     def __init__(self, parent=None):
         QDialog.__init__(self, parent)
